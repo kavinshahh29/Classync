@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Random;
 import java.util.Set;
 
 @Entity
@@ -14,7 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Class {
+public class Classroom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,20 +27,40 @@ public class Class {
     @ManyToMany(mappedBy = "classes")
     private Set<Role> roles;
 
+    @Column(nullable = false, unique = true, length = 10)
+    private String classroomCode;
+
     private LocalDateTime createdAt = LocalDateTime.now();
 
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void generateClassroomCode() {
+        this.classroomCode = generateRandomCode(10);
+    }
 
     @PreUpdate
     public void setUpdatedAt() {
         this.updatedAt = LocalDateTime.now();
     }
 
+    private String generateRandomCode(int length) {
+        String alphanumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StringBuilder code = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(alphanumeric.length());
+            code.append(alphanumeric.charAt(index));
+        }
+        return code.toString();
+    }
+
     @Override
     public String toString() {
-        return "Class{" +
+        return "Classroom{" +
                 "id=" + id +
                 ", className='" + className + '\'' +
+                ", classroomCode='" + classroomCode + '\'' +
                 '}';
     }
 }
