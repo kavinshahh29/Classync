@@ -30,7 +30,7 @@ public class Role {
 
     @ManyToMany
     @JoinTable(name = "role_classes", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "class_id"))
-    private Set<Class> classes;
+    private Set<Classroom> classes;
 
     @Override
     public String toString() {

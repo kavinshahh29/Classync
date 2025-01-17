@@ -1,8 +1,9 @@
 package com.classync.project.repository;
 
-import com.classync.project.entity.Class;
+import com.classync.project.entity.Classroom;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ClassRepository extends JpaRepository<Class, Long> {
-    Class findByClassName(String className); // Example custom query
+public interface ClassRepository extends JpaRepository<Classroom, Long> {
+    Classroom findByClassName(String className); // Example custom query
 }

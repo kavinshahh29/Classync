@@ -27,10 +27,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.io.IOException;
 import java.util.Optional;
 
-
 @EnableWebSecurity
 @Configuration
-//@Deprecated
+// @Deprecated
 @CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", allowCredentials = "true")
 public class SecurityConfiguration {
 
@@ -40,29 +39,39 @@ public class SecurityConfiguration {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/api/user").permitAll();
-                    auth.anyRequest().authenticated();
-                }).cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
-                .csrf(AbstractHttpConfigurer::disable).oauth2Login(oauth2Login -> oauth2Login.userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.oidcUserService(oidcUserService())).successHandler(new AuthenticationSuccessHandler() {
-                    @Override
-                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                        String email = ((org.springframework.security.oauth2.core.oidc.user.OidcUser) authentication.getPrincipal()).getEmail();
-                        String fullname = ((org.springframework.security.oauth2.core.oidc.user.OidcUser) authentication.getPrincipal()).getFullName();
-                        String picture = ((org.springframework.security.oauth2.core.oidc.user.OidcUser) authentication.getPrincipal()).getPicture();
-                        Optional<User> userOptional = userService.findUserByEmail(email);
-                        System.out.println("User found: " + userOptional);
-                        if (userOptional.isEmpty()) {
-                            User user = new User();
-                            user.setEmail(email);
-                            user.setFullName(fullname);
-                            user.setPicture(picture);
-                            User u = userService.saveUser(user);
-                            System.out.println("New User saved: " + u);
-                        }
-                        response.sendRedirect("http://localhost:5173");
-                    }
-                }).failureHandler(authenticationFailureHandler())).logout(logout -> logout.logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler()).invalidateHttpSession(true).deleteCookies("JSESSIONID")).build();
-
+            auth.requestMatchers("/api/user").permitAll();
+            auth.anyRequest().authenticated();
+        }).cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
+                .csrf(AbstractHttpConfigurer::disable)
+                .oauth2Login(oauth2Login -> oauth2Login
+                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.oidcUserService(oidcUserService()))
+                        .successHandler(new AuthenticationSuccessHandler() {
+                            @Override
+                            public void onAuthenticationSuccess(HttpServletRequest request,
+                                    HttpServletResponse response, Authentication authentication)
+                                    throws IOException, ServletException {
+                                String email = ((org.springframework.security.oauth2.core.oidc.user.OidcUser) authentication
+                                        .getPrincipal()).getEmail();
+                                String fullname = ((org.springframework.security.oauth2.core.oidc.user.OidcUser) authentication
+                                        .getPrincipal()).getFullName();
+                                String picture = ((org.springframework.security.oauth2.core.oidc.user.OidcUser) authentication
+                                        .getPrincipal()).getPicture();
+                                Optional<User> userOptional = userService.findUserByEmail(email);
+                                System.out.println("User found: " + userOptional);
+                                if (userOptional.isEmpty()) {
+                                    User user = new User();
+                                    user.setEmail(email);
+                                    user.setFullName(fullname);
+                                    user.setPicture(picture);
+                                    User u = userService.saveUser(user);
+                                    System.out.println("New User saved: " + u);
+                                }
+                                response.sendRedirect("http://localhost:5173");
+                            }
+                        }).failureHandler(authenticationFailureHandler()))
+                .logout(logout -> logout.logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler())
+                        .invalidateHttpSession(true).deleteCookies("JSESSIONID"))
+                .build();
 
     }
 
@@ -92,6 +101,5 @@ public class SecurityConfiguration {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-
 
 }

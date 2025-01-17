@@ -1,4 +1,4 @@
-package com.classync.project.service;
+package com.classync.project.services.impl;
 
 import com.classync.project.dao.ClassroomDAO;
 import com.classync.project.entity.Classroom;
@@ -19,7 +19,7 @@ public class ClassroomService {
         
         Classroom classroom = new Classroom();
         classroom.setClassName(className);
-
+        
         return classroomDAO.save(classroom);
     }
 

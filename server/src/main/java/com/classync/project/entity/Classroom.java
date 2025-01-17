@@ -24,8 +24,8 @@ public class Classroom {
     @Column(nullable = false, unique = true)
     private String className;
 
-    @ManyToMany(mappedBy = "classes")
-    private Set<Role> roles;
+    // @ManyToMany(mappedBy = "classes")
+    // private Set<Role> roles;
 
     @Column(nullable = false, unique = true, length = 10)
     private String classroomCode;

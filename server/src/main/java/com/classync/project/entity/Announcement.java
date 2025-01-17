@@ -21,7 +21,7 @@ public class Announcement {
 
     @ManyToOne
     @JoinColumn(name = "class_id", nullable = false)
-    private Class courseClass;
+    private Classroom courseClass;
 
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)

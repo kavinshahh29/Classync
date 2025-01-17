@@ -24,7 +24,7 @@ public class Assignment {
 
     @ManyToOne
     @JoinColumn(name = "class_id", nullable = false)
-    private Class courseClass;
+    private Classroom courseClass;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
