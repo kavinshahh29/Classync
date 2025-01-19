@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -29,6 +30,9 @@ public class Classroom {
 
     @Column(nullable = false, unique = true, length = 10)
     private String classroomCode;
+
+    @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserClassroom> userClassrooms = new ArrayList<>();
 
     private LocalDateTime createdAt = LocalDateTime.now();
 

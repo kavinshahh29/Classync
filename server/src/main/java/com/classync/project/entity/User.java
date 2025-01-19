@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -26,6 +28,9 @@ public class User {
 
     private String picture;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserClassroom> userClassrooms = new ArrayList<>();
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
@@ -39,5 +44,13 @@ public class User {
                 ", picture='" + picture + '\'' +
                 ", roles=" + roles +
                 '}';
+    }
+
+    public List<UserClassroom> getUserClassrooms() {
+        return userClassrooms;
+    }
+
+    public void setUserClassrooms(List<UserClassroom> userClassrooms) {
+        this.userClassrooms = userClassrooms;
     }
 }
