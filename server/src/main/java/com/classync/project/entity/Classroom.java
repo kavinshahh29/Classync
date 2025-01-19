@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,6 +34,7 @@ public class Classroom {
     private String classroomCode;
 
     @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<UserClassroom> userClassrooms = new ArrayList<>();
 
     private LocalDateTime createdAt = LocalDateTime.now();

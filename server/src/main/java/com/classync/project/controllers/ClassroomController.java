@@ -1,14 +1,19 @@
 package com.classync.project.controllers;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.classync.project.controllers.UserController.UserDetails;
@@ -16,6 +21,7 @@ import com.classync.project.entity.Classroom;
 import com.classync.project.services.impl.ClassroomService;
 
 import lombok.Getter;
+import net.minidev.json.JSONObject;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", allowCredentials = "true", methods = {
@@ -59,5 +65,23 @@ public class ClassroomController {
         return ResponseEntity.ok(new ClassroomDetails(
                 classroom.getClassName(),
                 classroom.getClassroomCode()));
+    }
+
+    // @GetMapping("/myclassrooms")
+    // public ResponseEntity<List<Classroom>> getMyClassrooms(@RequestBody
+    // Map<String, String> request) {
+
+    // String useremail = request.get("useremail");
+    // List<Classroom> classrooms = classroomService.getUserClassrooms(useremail);
+    // if (classrooms == null) {
+    // classrooms = Collections.emptyList();
+    // }
+
+    // return ResponseEntity.ok(classrooms);
+    // }
+    @GetMapping("/myclassrooms")
+    public ResponseEntity<List<Classroom>> getMyClassrooms(@RequestParam String useremail) {
+        List<Classroom> classrooms = classroomService.getUserClassrooms(useremail);
+        return ResponseEntity.ok(classrooms);
     }
 }
