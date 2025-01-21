@@ -34,9 +34,13 @@ public class User {
     @JsonIgnore
     private List<UserClassroom> userClassrooms = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles;
+    // @ManyToMany(fetch = FetchType.EAGER)
+    // @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    // private Set<Role> roles;
+
+    // @ManyToOne
+    // @JoinColumn(name = "role_id", nullable = false)
+    // private Role role;
 
     @Override
     public String toString() {
@@ -45,7 +49,6 @@ public class User {
                 ", fullName='" + fullName + '\'' +
                 ", email='" + email + '\'' +
                 ", picture='" + picture + '\'' +
-                ", roles=" + roles +
                 '}';
     }
 

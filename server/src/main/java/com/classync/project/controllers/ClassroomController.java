@@ -1,11 +1,15 @@
 package com.classync.project.controllers;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.classync.project.entity.Classroom;
+import com.classync.project.entity.User;
+import com.classync.project.entity.UserClassroom;
 import com.classync.project.services.impl.ClassroomService;
 
 import lombok.Getter;
@@ -62,21 +68,34 @@ public class ClassroomController {
                 classroom.getClassroomCode()));
     }
 
-    // @GetMapping("/myclassrooms")
-    // public ResponseEntity<List<Classroom>> getMyClassrooms(@RequestBody
-    // Map<String, String> request) {
-
-    // String useremail = request.get("useremail");
-    // List<Classroom> classrooms = classroomService.getUserClassrooms(useremail);
-    // if (classrooms == null) {
-    // classrooms = Collections.emptyList();
-    // }
-
-    // return ResponseEntity.ok(classrooms);
-    // }
     @GetMapping("/myclassrooms")
     public ResponseEntity<List<Classroom>> getMyClassrooms(@RequestParam String useremail) {
         List<Classroom> classrooms = classroomService.getUserClassrooms(useremail);
         return ResponseEntity.ok(classrooms);
+    }
+
+    // @GetMapping("/{classroomId}/participants")
+    // public ResponseEntity<?> getParticipants(@PathVariable Long classroomId) {
+    // try {
+    // List<User> participants =
+    // classroomService.getParticipantsByClassroomId(classroomId);
+    // return ResponseEntity.ok(participants);
+    // } catch (Exception e) {
+    // Map<String, String> errorResponse = new HashMap<>();
+    // errorResponse.put("error", e.getMessage());
+    // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    // }
+    // }
+
+    @GetMapping("/{classroomId}/participants")
+    public ResponseEntity<?> getParticipants(@PathVariable Long classroomId) {
+        try {
+            List<Map<String, Object>> participants = classroomService.getParticipantsByClassroomId(classroomId);
+            return ResponseEntity.ok(participants);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
     }
 }

@@ -16,7 +16,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -116,4 +118,31 @@ public class ClassroomService {
 
         return classrooms;
     }
+
+
+    public List<Map<String, Object>> getParticipantsByClassroomId(Long classroomId) {
+    // Fetch the classroom by ID
+    Classroom classroom = classroomDAO.findById(classroomId)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid classroom ID"));
+
+    // Fetch all UserClassroom entries for the classroom
+    List<UserClassroom> userClassrooms = userClassroomDAO.findByClassroom(classroom);
+
+    // Map UserClassroom entries to a List of Maps
+    return userClassrooms.stream()
+            .map(userClassroom -> {
+                User user = userClassroom.getUser();
+                Role role = userClassroom.getRole();
+                // Create a Map to represent the participant
+                Map<String, Object> participant = new HashMap<>();
+                participant.put("id", user.getId());
+                participant.put("fullName", user.getFullName());
+                participant.put("email", user.getEmail());
+                participant.put("picture", user.getPicture());
+                participant.put("role", role.getName());
+
+                return participant;
+            })
+            .collect(Collectors.toList());
+}
 }

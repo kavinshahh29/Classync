@@ -14,4 +14,5 @@ public interface UserclassroomDAO extends JpaRepository<UserClassroom, Long> {
 
     List<UserClassroom> findByUser(User user);
 
+    List<UserClassroom> findByClassroom(Classroom classroom);
 }
