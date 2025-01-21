@@ -1,5 +1,7 @@
 package com.classync.project.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -17,7 +19,13 @@ public class UserClassroom {
     @JoinColumn(name = "classroom_id", nullable = false)
     private Classroom classroom;
 
-    // Getters and Setters
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
+
+    private LocalDateTime joinedAt;
+
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -41,4 +49,21 @@ public class UserClassroom {
     public void setClassroom(Classroom classroom) {
         this.classroom = classroom;
     }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public LocalDateTime getJoinedAt() {
+        return joinedAt;
+    }
+
+    public void setJoinedAt(LocalDateTime joinedAt) {
+        this.joinedAt = joinedAt;
+    }
+
 }

@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -14,29 +13,27 @@ import java.util.Set;
 @Getter
 @Setter
 public class Role {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String roleName;
+    @Column(unique = true, nullable = false)
+    private String name; // e.g., "TEACHER", "STUDENT"
 
-    @Column(nullable = false)
-    private String name;
+    // Getters and setters
+    public Long getId() {
+        return id;
+    }
 
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
-    private Set<User> users;
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    @ManyToMany
-    @JoinTable(name = "role_classes", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "class_id"))
-    private Set<Classroom> classes;
+    public String getName() {
+        return name;
+    }
 
-    @Override
-    public String toString() {
-        return "Role{" +
-                "id=" + id +
-                ", roleName='" + roleName + '\'' +
-                '}';
+    public void setName(String name) {
+        this.name = name;
     }
 }
