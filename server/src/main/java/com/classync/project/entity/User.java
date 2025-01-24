@@ -35,7 +35,8 @@ public class User {
     private List<UserClassroom> userClassrooms = new ArrayList<>();
 
     // @ManyToMany(fetch = FetchType.EAGER)
-    // @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    // @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
+    // inverseJoinColumns = @JoinColumn(name = "role_id"))
     // private Set<Role> roles;
 
     // @ManyToOne
@@ -58,5 +59,9 @@ public class User {
 
     public void setUserClassrooms(List<UserClassroom> userClassrooms) {
         this.userClassrooms = userClassrooms;
+    }
+
+    public int getId() {
+        return this.id;
     }
 }

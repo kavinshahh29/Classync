@@ -82,6 +82,7 @@ public class ClassroomService {
         User user = userDAO.findByEmail(useremail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        // Check if the user is already a member of the classroom
         Optional<UserClassroom> existingEntry = userClassroomDAO.findByUserAndClassroom(user, classroom);
         if (existingEntry.isPresent()) {
             throw new IllegalArgumentException("User is already a member of this classroom");
@@ -119,30 +120,29 @@ public class ClassroomService {
         return classrooms;
     }
 
-
     public List<Map<String, Object>> getParticipantsByClassroomId(Long classroomId) {
-    // Fetch the classroom by ID
-    Classroom classroom = classroomDAO.findById(classroomId)
-            .orElseThrow(() -> new IllegalArgumentException("Invalid classroom ID"));
+        // Fetch the classroom by ID
+        Classroom classroom = classroomDAO.findById(classroomId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid classroom ID"));
 
-    // Fetch all UserClassroom entries for the classroom
-    List<UserClassroom> userClassrooms = userClassroomDAO.findByClassroom(classroom);
+        // Fetch all UserClassroom entries for the classroom
+        List<UserClassroom> userClassrooms = userClassroomDAO.findByClassroom(classroom);
 
-    // Map UserClassroom entries to a List of Maps
-    return userClassrooms.stream()
-            .map(userClassroom -> {
-                User user = userClassroom.getUser();
-                Role role = userClassroom.getRole();
-                // Create a Map to represent the participant
-                Map<String, Object> participant = new HashMap<>();
-                participant.put("id", user.getId());
-                participant.put("fullName", user.getFullName());
-                participant.put("email", user.getEmail());
-                participant.put("picture", user.getPicture());
-                participant.put("role", role.getName());
+        // Map UserClassroom entries to a List of Maps
+        return userClassrooms.stream()
+                .map(userClassroom -> {
+                    User user = userClassroom.getUser();
+                    Role role = userClassroom.getRole();
+                    // Create a Map to represent the participant
+                    Map<String, Object> participant = new HashMap<>();
+                    participant.put("id", user.getId());
+                    participant.put("fullName", user.getFullName());
+                    participant.put("email", user.getEmail());
+                    participant.put("picture", user.getPicture());
+                    participant.put("role", role.getName());
 
-                return participant;
-            })
-            .collect(Collectors.toList());
-}
+                    return participant;
+                })
+                .collect(Collectors.toList());
+    }
 }
