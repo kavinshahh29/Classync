@@ -1,6 +1,5 @@
 package com.classync.project.services.impl;
 
-import com.classync.project.controllers.UserController.UserDetails;
 import com.classync.project.dao.ClassroomDAO;
 import com.classync.project.dao.RoleDAO;
 import com.classync.project.dao.UserDAO;
@@ -9,10 +8,7 @@ import com.classync.project.entity.Classroom;
 import com.classync.project.entity.Role;
 import com.classync.project.entity.User;
 import com.classync.project.entity.UserClassroom;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

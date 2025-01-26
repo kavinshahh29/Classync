@@ -10,6 +10,7 @@ import com.classync.project.entity.Assignment;
 import com.classync.project.entity.Classroom;
 import com.classync.project.entity.User;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,14 +27,15 @@ public class AssignmentService {
 
     private final UserDAO userDAO;
 
+    private final FileUploadService fileUploadService;
+
     public AssignmentService(AssignmentDAO assignmentDAO, ClassroomDAO classroomDAO,
-            UserDAO userDAO) {
+            UserDAO userDAO, FileUploadService fileUpload) {
         this.assignmentDAO = assignmentDAO;
         this.classroomDAO = classroomDAO;
         this.userDAO = userDAO;
+        this.fileUploadService = fileUpload;
     }
-
-    private final String UPLOAD_DIR = "uploads/assignments/";
 
     public Assignment createAssignment(String title, String content, MultipartFile file, Long classroomId,
             int createdById) throws IOException {
@@ -53,11 +55,17 @@ public class AssignmentService {
         // Handle file upload (if applicable)
         if (file != null && !file.isEmpty()) {
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            Path filePath = Paths.get(UPLOAD_DIR + fileName);
-            Files.createDirectories(filePath.getParent());
-            Files.write(filePath, file.getBytes());
-            assignment.setFilePath(filePath.toString());
+            File convertedFile = fileUploadService.convertToFile(file, fileName);
+            String uploadedLink = fileUploadService.uploadPdf(convertedFile, fileName);
+            assignment.setFilePath(uploadedLink);
+            System.out.println("Uploaded link : " + uploadedLink);
         }
+        // String fileName = System.currentTimeMillis() + "_" +
+        // file.getOriginalFilename();
+        // Path filePath = Paths.get(UPLOAD_DIR + fileName);
+        // Files.createDirectories(filePath.getParent());
+        // Files.write(filePath, file.getBytes());
+        // assignment.setFilePath(filePath.toString());
 
         return assignmentDAO.save(assignment);
     }
