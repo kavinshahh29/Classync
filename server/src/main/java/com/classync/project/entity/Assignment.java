@@ -47,13 +47,16 @@ public class Assignment {
     private String title;
 
     @Column(columnDefinition = "TEXT")
-    private String content; // For text-based assignments
+    private String content;
 
     @Column
-    private String filePath; // For PDF file path (if applicable)
+    private String filePath;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime dueDate;
 
     @ManyToOne
     @JoinColumn(name = "classroom_id", nullable = false)
@@ -118,5 +121,13 @@ public class Assignment {
 
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public LocalDateTime getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate;
     }
 }

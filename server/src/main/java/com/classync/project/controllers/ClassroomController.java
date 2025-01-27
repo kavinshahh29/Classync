@@ -3,7 +3,6 @@ package com.classync.project.controllers;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.classync.project.entity.Classroom;
-import com.classync.project.entity.User;
-import com.classync.project.entity.UserClassroom;
 import com.classync.project.services.impl.ClassroomService;
 
 import lombok.Getter;

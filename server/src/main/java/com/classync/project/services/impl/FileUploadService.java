@@ -33,8 +33,8 @@ public class FileUploadService {
     public String uploadPdf(File file, String fileName) throws IOException {
 
         String bucketName = "doc-scheduler-6e8de.appspot.com";
-
-        BlobId blobId = BlobId.of(bucketName, FOLDER_NAME + fileName);
+        String filePath = FOLDER_NAME + fileName;
+        BlobId blobId = BlobId.of(bucketName, filePath);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("application/pdf").build();
 
         InputStream inputStream = FileUploadService.class.getClassLoader()
@@ -49,10 +49,10 @@ public class FileUploadService {
 
         storage.create(blobInfo, Files.readAllBytes(file.toPath()));
         String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media";
-        return String.format(DOWNLOAD_URL, bucketName, URLEncoder.encode(fileName, StandardCharsets.UTF_8));
+        return String.format(DOWNLOAD_URL, bucketName, URLEncoder.encode(filePath, StandardCharsets.UTF_8));
     }
 
-    private String getDownloadUrl(String filePath) {
+    public String getDownloadUrl(String filePath) {
         String bucketName = "doc-scheduler-6e8de.appspot.com";
         String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media";
         return String.format(DOWNLOAD_URL, bucketName, URLEncoder.encode(filePath, StandardCharsets.UTF_8));
