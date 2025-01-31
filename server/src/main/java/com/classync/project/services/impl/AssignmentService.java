@@ -9,7 +9,9 @@ import com.classync.project.dao.ClassroomDAO;
 import com.classync.project.dao.UserDAO;
 import com.classync.project.entity.Assignment;
 import com.classync.project.entity.Classroom;
+import com.classync.project.entity.Submission;
 import com.classync.project.entity.User;
+import com.classync.project.repository.SubmissionRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,16 +30,19 @@ public class AssignmentService {
 
     private final FileUploadService fileUploadService;
 
+    private final SubmissionRepository submissionRepository;
+
     public AssignmentService(AssignmentDAO assignmentDAO, ClassroomDAO classroomDAO,
-            UserDAO userDAO, FileUploadService fileUpload) {
+            UserDAO userDAO, FileUploadService fileUpload, SubmissionRepository submissionRepository) {
         this.assignmentDAO = assignmentDAO;
         this.classroomDAO = classroomDAO;
         this.userDAO = userDAO;
         this.fileUploadService = fileUpload;
+        this.submissionRepository = submissionRepository;
     }
 
     public Assignment createAssignment(String title, String content, MultipartFile file, Long classroomId,
-            int createdById , LocalDateTime dueDate) throws IOException {
+            int createdById, LocalDateTime dueDate) throws IOException {
         Classroom classroom = classroomDAO.findById(classroomId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid classroom ID"));
 
@@ -60,14 +65,33 @@ public class AssignmentService {
             assignment.setFilePath(uploadedLink);
             System.out.println("Uploaded link : " + uploadedLink);
         }
-        // String fileName = System.currentTimeMillis() + "_" +
-        // file.getOriginalFilename();
-        // Path filePath = Paths.get(UPLOAD_DIR + fileName);
-        // Files.createDirectories(filePath.getParent());
-        // Files.write(filePath, file.getBytes());
-        // assignment.setFilePath(filePath.toString());
 
         return assignmentDAO.save(assignment);
+    }
+
+    public Submission createSubmission(Assignment assignment, MultipartFile file, Long classroomId, int submittedbyId)
+            throws IOException {
+        Classroom classroom = classroomDAO.findById(classroomId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid classroom ID"));
+
+        User createdBy = userDAO.findById(submittedbyId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+
+        Submission submission = new Submission();
+        submission.setAssignment(assignment);
+        submission.setClassroom(classroom);
+        submission.setStudent(createdBy);
+        submission.setSubmittedAt(LocalDateTime.now());
+
+        if (file != null && !file.isEmpty()) {
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            File convertedFile = fileUploadService.convertToFile(file, fileName);
+            String uploadedLink = fileUploadService.uploadSubmission(convertedFile, fileName);
+            submission.setFileUrl(uploadedLink);
+            System.out.println("Uploaded link : " + uploadedLink);
+        }
+
+        return submissionRepository.save(submission);
     }
 
     public List<AssignmentDto> getAssignmentsByClassroom(Long classroomId) {

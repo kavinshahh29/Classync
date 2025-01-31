@@ -28,12 +28,36 @@ public class FileUploadService {
         return tempFile;
     }
 
-    private final String FOLDER_NAME = "assignments/";
+    private final String ASSIGNMENT_FOLDER_NAME = "assignments/";
 
     public String uploadPdf(File file, String fileName) throws IOException {
 
         String bucketName = "doc-scheduler-6e8de.appspot.com";
-        String filePath = FOLDER_NAME + fileName;
+        String filePath = ASSIGNMENT_FOLDER_NAME + fileName;
+        BlobId blobId = BlobId.of(bucketName, filePath);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("application/pdf").build();
+
+        InputStream inputStream = FileUploadService.class.getClassLoader()
+                .getResourceAsStream("doc-scheduler-6e8de-firebase-adminsdk-ed6lt-6ddee1704e.json");
+
+        if (inputStream == null) {
+            throw new IOException("Firebase credentials file not found");
+        }
+
+        GoogleCredentials credentials = GoogleCredentials.fromStream(inputStream);
+        Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
+
+        storage.create(blobInfo, Files.readAllBytes(file.toPath()));
+        String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media";
+        return String.format(DOWNLOAD_URL, bucketName, URLEncoder.encode(filePath, StandardCharsets.UTF_8));
+    }
+
+    private final String SUBMISSION_FOLDER_NAME = "submissions/";
+
+    public String uploadSubmission(File file, String fileName) throws IOException {
+
+        String bucketName = "doc-scheduler-6e8de.appspot.com";
+        String filePath = SUBMISSION_FOLDER_NAME + fileName;
         BlobId blobId = BlobId.of(bucketName, filePath);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("application/pdf").build();
 

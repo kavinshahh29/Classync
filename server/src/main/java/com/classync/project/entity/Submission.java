@@ -14,6 +14,10 @@ public class Submission {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "classroom_id", nullable = false)
+    private Classroom classroom;
+
+    @ManyToOne
     @JoinColumn(name = "assignment_id", nullable = false)
     private Assignment assignment;
 
