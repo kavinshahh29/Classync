@@ -145,8 +145,9 @@ public class SecurityConfiguration {
         return http
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/api/user").permitAll(); // Allow unauthenticated access to /api/user
-                    auth.requestMatchers("/api/classrooms/create").authenticated(); // Require authentication for this
-                                                                                    // endpoint
+                    auth.requestMatchers("/api/classrooms/create").authenticated();
+                    auth.requestMatchers("/api/announcements/*").authenticated(); // Require authentication for this
+                                                                                  // endpoint
                     auth.anyRequest().authenticated(); // Require authentication for all other endpoints
                 })
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
