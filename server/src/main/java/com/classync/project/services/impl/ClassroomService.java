@@ -3,7 +3,7 @@ package com.classync.project.services.impl;
 import com.classync.project.dao.ClassroomDAO;
 import com.classync.project.dao.RoleDAO;
 import com.classync.project.dao.UserDAO;
-import com.classync.project.dao.UserclassroomDAO;
+import com.classync.project.dao.UserClassroomDAO;
 import com.classync.project.entity.Classroom;
 import com.classync.project.entity.Role;
 import com.classync.project.entity.User;
@@ -23,10 +23,10 @@ public class ClassroomService {
 
     private final ClassroomDAO classroomDAO;
     private final UserDAO userDAO;
-    private final UserclassroomDAO userClassroomDAO;
+    private final UserClassroomDAO userClassroomDAO;
     private final RoleDAO roleDAO;
 
-    public ClassroomService(ClassroomDAO classroomDAO, UserDAO userDAO, UserclassroomDAO userClassroomDAO,
+    public ClassroomService(ClassroomDAO classroomDAO, UserDAO userDAO, UserClassroomDAO userClassroomDAO,
             RoleDAO roleDAO) {
         this.classroomDAO = classroomDAO;
         this.userDAO = userDAO;
