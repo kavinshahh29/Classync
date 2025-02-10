@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.apache.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import com.classync.project.DTO.AssignmentDto;
 import com.classync.project.entity.Assignment;
 import com.classync.project.entity.Submission;
 import com.classync.project.repository.AssignmentRepository;
+import com.classync.project.services.SubmissionService;
 import com.classync.project.services.impl.AssignmentService;
 
 @RestController
@@ -31,10 +33,13 @@ public class AssignmentController {
 
     private final AssignmentService assignmentService;
     private final AssignmentRepository assignmentRepository;
+    private final SubmissionService submissionService;
 
-    public AssignmentController(AssignmentService assignmentService, AssignmentRepository assignmentRepository) {
+    public AssignmentController(AssignmentService assignmentService, AssignmentRepository assignmentRepository,
+            SubmissionService submissionService) {
         this.assignmentService = assignmentService;
         this.assignmentRepository = assignmentRepository;
+        this.submissionService = submissionService;
     }
 
     @PostMapping("/add")
@@ -107,6 +112,29 @@ public class AssignmentController {
             return ResponseEntity.status(500).body("Failed to upload file.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/submissions")
+    public ResponseEntity<?> getSubmissions(
+            @RequestParam Long assignmentId,
+            @RequestParam Long submittedById) {
+        try {
+            List<Submission> submissions = submissionService.getSubmissionsByAssignmentAndUser(assignmentId,
+                    submittedById);
+            return ResponseEntity.ok(submissions);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/submissions/{submissionId}")
+    public ResponseEntity<?> deleteSubmission(@PathVariable Long submissionId) {
+        try {
+            submissionService.deleteSubmission(submissionId);
+            return ResponseEntity.ok("Submission deleted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
