@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.classync.project.DTO.UserClassroomDto;
 import com.classync.project.entity.Classroom;
 import com.classync.project.services.impl.ClassroomService;
 
@@ -55,17 +56,6 @@ public class ClassroomController {
         }
     }
 
-    // @PostMapping("/join")
-    // public ResponseEntity<?> joinClass(@RequestBody Map<String, String> request)
-    // {
-    // String classCode = request.get("classCode");
-    // String useremail = request.get("useremail");
-    // Classroom classroom = classroomService.joinClass(classCode, useremail);
-    // return ResponseEntity.ok(new ClassroomDetails(
-    // classroom.getClassName(),
-    // classroom.getClassroomCode()));
-    // }
-
     @PostMapping("/join")
     public ResponseEntity<?> joinClass(@RequestBody Map<String, String> request) {
         try {
@@ -87,8 +77,8 @@ public class ClassroomController {
     }
 
     @GetMapping("/myclassrooms")
-    public ResponseEntity<List<Classroom>> getMyClassrooms(@RequestParam String useremail) {
-        List<Classroom> classrooms = classroomService.getUserClassrooms(useremail);
+    public ResponseEntity<List<UserClassroomDto>> getMyClassrooms(@RequestParam String useremail) {
+        List<UserClassroomDto> classrooms = classroomService.getUserClassrooms(useremail);
         return ResponseEntity.ok(classrooms);
     }
 
@@ -103,4 +93,6 @@ public class ClassroomController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
+
+
 }

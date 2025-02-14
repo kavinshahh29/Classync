@@ -1,5 +1,6 @@
 package com.classync.project.services.impl;
 
+import com.classync.project.DTO.UserClassroomDto;
 import com.classync.project.dao.ClassroomDAO;
 import com.classync.project.dao.RoleDAO;
 import com.classync.project.dao.UserDAO;
@@ -45,10 +46,15 @@ public class ClassroomService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // Fetch the TEACHER role
-        Role teacherRole = roleDAO.findByName("TEACHER")
+        // Role teacherRole = roleDAO.findByName("TEACHER")
+        // .orElseThrow(() -> {
+        // System.err.println("TEACHER role not found in the database");
+        // return new IllegalArgumentException("TEACHER role not found");
+        // });
+        Role teacherRole = roleDAO.findByName("CREATER")
                 .orElseThrow(() -> {
-                    System.err.println("TEACHER role not found in the database");
-                    return new IllegalArgumentException("TEACHER role not found");
+                    System.err.println("CREATER role not found in the database");
+                    return new IllegalArgumentException("CREATER role not found");
                 });
 
         // Assign the creator as a TEACHER
@@ -102,18 +108,22 @@ public class ClassroomService {
         return classroom;
     }
 
-    public List<Classroom> getUserClassrooms(String useremail) {
+    public List<UserClassroomDto> getUserClassrooms(String useremail) {
         // Fetch the user by email
         Optional<User> userOpt = userDAO.findByEmail(useremail);
         User user = userOpt.orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         List<UserClassroom> userClassrooms = userClassroomDAO.findByUser(user);
 
-        List<Classroom> classrooms = userClassrooms.stream()
-                .map(UserClassroom::getClassroom)
+        // List<Classroom> classrooms = userClassrooms.stream()
+        // .map(UserClassroom::getClassroom)
+        // .collect(Collectors.toList());
+
+        List<UserClassroomDto> classroomsWithRoles = userClassrooms.stream()
+                .map(uc -> new UserClassroomDto(uc.getClassroom(), uc.getRole().getName()))
                 .collect(Collectors.toList());
 
-        return classrooms;
+        return classroomsWithRoles;
     }
 
     public List<Map<String, Object>> getParticipantsByClassroomId(Long classroomId) {
@@ -140,5 +150,9 @@ public class ClassroomService {
                     return participant;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public void updateParticipantRole(Long classroomId, String participantEmail, Role newRole) {
+        
     }
 }
