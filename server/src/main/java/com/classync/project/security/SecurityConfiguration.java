@@ -147,8 +147,10 @@ public class SecurityConfiguration {
                     auth.requestMatchers("/api/user").permitAll(); // Allow unauthenticated access to /api/user
                     auth.requestMatchers("/api/classrooms/create").authenticated();
                     auth.requestMatchers("/api/announcements/*").authenticated(); // Require authentication for this
-                                                                                  // endpoint
-                    auth.anyRequest().authenticated(); // Require authentication for all other endpoints
+                    auth.requestMatchers("/api/comments/*").authenticated(); // Allow authenticated users to comment
+                    auth.anyRequest().authenticated(); // Require authentication for all other endpoints // endpoint
+                    // auth.anyRequest().authenticated(); // Require authentication for all other
+                    // endpoints
                 })
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for simplicity (enable it in production)
