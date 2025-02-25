@@ -22,7 +22,7 @@ public class UserClassroomServiceImpl implements UserClassroomService {
     }
 
     @Transactional
-    public void updateUserRole(int userId, Long classroomId, String newRoleName) {
+    public boolean updateUserRole(int userId, Long classroomId, String newRoleName) {
 
         UserClassroom userClassroom = userClassroomRepository.findByUserIdAndClassroomId(userId, classroomId)
                 .orElseThrow(() -> new RuntimeException("UserClassroom not found"));
@@ -32,5 +32,7 @@ public class UserClassroomServiceImpl implements UserClassroomService {
         userClassroom.setRole(newRole);
 
         userClassroomRepository.save(userClassroom);
+        return true;
     }
+
 }
