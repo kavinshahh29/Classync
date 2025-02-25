@@ -76,8 +76,14 @@ public class SecurityConfiguration {
                                 response.sendRedirect("http://localhost:5173");
                             }
                         }).failureHandler(authenticationFailureHandler()))
-                .logout(logout -> logout.logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler())
-                        .invalidateHttpSession(true).deleteCookies("JSESSIONID"))
+                // .logout(logout ->
+                // logout.logoutUrl("/logout").logoutSuccessUrl("/").permitAll())
+                .logout(logout -> logout
+                        .logoutUrl("/api/logout")
+                        .logoutSuccessHandler(logoutSuccessHandler())
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID"))
+
                 .build();
     }
 

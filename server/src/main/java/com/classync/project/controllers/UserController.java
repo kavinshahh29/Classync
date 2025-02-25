@@ -10,10 +10,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.classync.project.entity.User;
 import com.classync.project.services.impl.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", allowCredentials = "true")
@@ -39,6 +43,16 @@ public class UserController {
                 oidcUser.getPicture()));
     }
 
+    @PostMapping("/api/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            request.logout();
+            response.setStatus(HttpServletResponse.SC_OK);
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        
+        }
+    }
     @Getter
     public static class UserDetails {
         private final int id;
