@@ -11,6 +11,8 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.classync.project.entity.User;
@@ -27,6 +29,25 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @PutMapping("/api/user/update")
+    public ResponseEntity<?> updateUser(@RequestBody User updatedUser) {
+        try {
+            User user = userService.findById(updatedUser.getId());
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+
+            user.setFullName(updatedUser.getFullName());
+            user.setPicture(updatedUser.getPicture());
+            userService.saveUser(user);
+
+            return ResponseEntity.ok("User updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to update user: " + e.getMessage());
+        }
     }
 
     @GetMapping("/api/user")
@@ -50,9 +71,10 @@ public class UserController {
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        
+
         }
     }
+
     @Getter
     public static class UserDetails {
         private final int id;

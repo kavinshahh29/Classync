@@ -38,10 +38,11 @@ public class SecurityConfiguration {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/api/user").permitAll(); // Allow unauthenticated access to /api/user
+                    auth.requestMatchers("/api/user/*").permitAll(); // Allow unauthenticated access to /api/user
                     auth.requestMatchers("/api/classrooms/create").authenticated();
                     auth.requestMatchers("/api/announcements/*").authenticated(); // Require authentication for this
                     auth.requestMatchers("/api/user-classroom/*").authenticated();
+                    auth.requestMatchers("api/user/update").authenticated();
                     auth.requestMatchers("/api/comments/*").authenticated(); // Allow authenticated users to comment
                     auth.anyRequest().authenticated(); // Require authentication for all other endpoints // endpoint
                     // auth.anyRequest().authenticated(); // Require authentication for all other
