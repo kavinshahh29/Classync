@@ -27,6 +27,11 @@ public class ClassroomService {
     private final UserClassroomDAO userClassroomDAO;
     private final RoleDAO roleDAO;
 
+
+    public List<Classroom> getAllClassrooms(){
+        return  this.classroomDAO.findAll();
+    }
+
     public ClassroomService(ClassroomDAO classroomDAO, UserDAO userDAO, UserClassroomDAO userClassroomDAO,
             RoleDAO roleDAO) {
         this.classroomDAO = classroomDAO;
@@ -154,5 +159,10 @@ public class ClassroomService {
 
     public void updateParticipantRole(Long classroomId, String participantEmail, Role newRole) {
         
+    }
+
+    public Classroom getClassroomById(Long classroomId) {
+        return classroomDAO.findById(classroomId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid classroom ID"));
     }
 }

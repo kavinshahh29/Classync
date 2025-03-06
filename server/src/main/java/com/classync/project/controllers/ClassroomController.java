@@ -38,6 +38,12 @@ public class ClassroomController {
         this.userClassroomService = userClassroomService;
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<Classroom>> getAllClassrooms() {
+        List<Classroom> classrooms = classroomService.getAllClassrooms();
+        return ResponseEntity.ok(classrooms);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> createClass(@RequestBody Map<String, String> request) {
         String className = request.get("className");
@@ -84,6 +90,19 @@ public class ClassroomController {
     public ResponseEntity<List<UserClassroomDto>> getMyClassrooms(@RequestParam String useremail) {
         List<UserClassroomDto> classrooms = classroomService.getUserClassrooms(useremail);
         return ResponseEntity.ok(classrooms);
+    }
+
+
+    @GetMapping("/{classroomId}")
+    public ResponseEntity<?> getClassroomInfo(@PathVariable Long classroomId){
+        try {
+            Classroom classroom = classroomService.getClassroomById(classroomId);
+            return ResponseEntity.ok(classroom);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
     }
 
     @GetMapping("/{classroomId}/participants")
