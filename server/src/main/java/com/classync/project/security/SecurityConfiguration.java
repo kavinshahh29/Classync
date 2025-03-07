@@ -44,6 +44,7 @@ public class SecurityConfiguration {
                     auth.requestMatchers("/api/user-classroom/*").authenticated();
                     auth.requestMatchers("api/user/update").authenticated();
                     auth.requestMatchers("/api/comments/*").authenticated(); // Allow authenticated users to comment
+                    auth.requestMatchers("/api/doubts/*").authenticated(); // Allow authenticated users to comment
                     auth.anyRequest().authenticated(); // Require authentication for all other endpoints // endpoint
                     // auth.anyRequest().authenticated(); // Require authentication for all other
                     // endpoints
