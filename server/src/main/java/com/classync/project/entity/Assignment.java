@@ -2,39 +2,7 @@ package com.classync.project.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.time.LocalDateTime;
-
-// @Data
-// @Entity
-// public class Assignment {
-
-//     @Id
-//     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//     private Long id;
-
-//     @Column(nullable = false)
-//     private String title;
-
-//     @Column(columnDefinition = "TEXT")
-//     private String description;
-
-//     @Column(nullable = false)
-//     private LocalDateTime dueDate;
-
-//     @ManyToOne
-//     @JoinColumn(name = "class_id", nullable = false)
-//     private Classroom courseClass;
-
-//     private LocalDateTime createdAt = LocalDateTime.now();
-
-//     private LocalDateTime updatedAt;
-
-//     @PreUpdate
-//     public void setUpdatedAt() {
-//         this.updatedAt = LocalDateTime.now();
-//     }
-// }
 
 @Data
 @Entity
@@ -50,7 +18,10 @@ public class Assignment {
     private String content;
 
     @Column
-    private String filePath;
+    private String questionFilePath; // File for assignment question
+
+    @Column
+    private String solutionFilePath; // File for teacher's solution
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -64,9 +35,24 @@ public class Assignment {
 
     @ManyToOne
     @JoinColumn(name = "created_by", nullable = false)
-    private User createdBy; // The teacher who created the assignment
+    private User createdBy;
 
-    // Getters and setters
+
+
+    public Assignment() {
+    }
+
+    public Assignment(String title, String content, String questionFilePath, String solutionFilePath, LocalDateTime createdAt, LocalDateTime dueDate, Classroom classroom, User createdBy) {
+        this.title = title;
+        this.content = content;
+        this.questionFilePath = questionFilePath;
+        this.solutionFilePath = solutionFilePath;
+        this.createdAt = createdAt;
+        this.dueDate = dueDate;
+        this.classroom = classroom;
+        this.createdBy = createdBy;
+    }
+
     public Long getId() {
         return id;
     }
@@ -91,12 +77,20 @@ public class Assignment {
         this.content = content;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public String getQuestionFilePath() {
+        return questionFilePath;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setQuestionFilePath(String questionFilePath) {
+        this.questionFilePath = questionFilePath;
+    }
+
+    public String getSolutionFilePath() {
+        return solutionFilePath;
+    }
+
+    public void setSolutionFilePath(String solutionFilePath) {
+        this.solutionFilePath = solutionFilePath;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -105,6 +99,14 @@ public class Assignment {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate;
     }
 
     public Classroom getClassroom() {
@@ -123,11 +125,19 @@ public class Assignment {
         this.createdBy = createdBy;
     }
 
-    public LocalDateTime getDueDate() {
-        return dueDate;
+    @Override
+    public String toString() {
+        return "Assignment{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", questionFilePath='" + questionFilePath + '\'' +
+                ", solutionFilePath='" + solutionFilePath + '\'' +
+                ", createdAt=" + createdAt +
+                ", dueDate=" + dueDate +
+                ", classroom=" + classroom +
+                ", createdBy=" + createdBy +
+                '}';
     }
 
-    public void setDueDate(LocalDateTime dueDate) {
-        this.dueDate = dueDate;
-    }
 }

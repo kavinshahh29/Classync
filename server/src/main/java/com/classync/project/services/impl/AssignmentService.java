@@ -41,8 +41,8 @@ public class AssignmentService {
         this.submissionRepository = submissionRepository;
     }
 
-    public Assignment createAssignment(String title, String content, MultipartFile file, Long classroomId,
-            int createdById, LocalDateTime dueDate) throws IOException {
+    public Assignment createAssignment(String title, String content, MultipartFile questionFile, MultipartFile solutionFile, Long classroomId,
+                                       int createdById, LocalDateTime dueDate) throws IOException {
         Classroom classroom = classroomDAO.findById(classroomId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid classroom ID"));
 
@@ -57,17 +57,25 @@ public class AssignmentService {
         assignment.setClassroom(classroom);
         assignment.setCreatedBy(createdBy);
 
-        // Handle file upload (if applicable)
-        if (file != null && !file.isEmpty()) {
-            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            File convertedFile = fileUploadService.convertToFile(file, fileName);
-            String uploadedLink = fileUploadService.uploadPdf(convertedFile, fileName);
-            assignment.setFilePath(uploadedLink);
-            System.out.println("Uploaded link : " + uploadedLink);
+        // Handle question file upload
+        if (questionFile != null && !questionFile.isEmpty()) {
+            String questionFileName = System.currentTimeMillis() + "_Q_" + questionFile.getOriginalFilename();
+            File convertedFile = fileUploadService.convertToFile(questionFile, questionFileName);
+            String questionFileUrl = fileUploadService.uploadPdf(convertedFile, questionFileName);
+            assignment.setQuestionFilePath(questionFileUrl);
+        }
+
+        // Handle solution file upload
+        if (solutionFile != null && !solutionFile.isEmpty()) {
+            String solutionFileName = System.currentTimeMillis() + "_S_" + solutionFile.getOriginalFilename();
+            File convertedFile = fileUploadService.convertToFile(solutionFile, solutionFileName);
+            String solutionFileUrl = fileUploadService.uploadPdf(convertedFile, solutionFileName);
+            assignment.setSolutionFilePath(solutionFileUrl);
         }
 
         return assignmentDAO.save(assignment);
     }
+
 
     public Submission createSubmission(Assignment assignment, MultipartFile file, Long classroomId, int submittedbyId)
             throws IOException {
@@ -102,14 +110,28 @@ public class AssignmentService {
         // Retrieve assignments from the database
         List<Assignment> assignments = assignmentDAO.findByClassroom(classroom);
 
+//        return assignments.stream().map(assignment -> {
+//            String downloadUrl = fileUploadService.getDownloadUrl(assignment.getFilePath());
+//            return new AssignmentDto(
+//                    assignment.getId(),
+//                    assignment.getTitle(),
+//                    assignment.getContent(),
+//                    assignment.getFilePath(),
+//                    downloadUrl,
+//                    assignment.getCreatedAt(),
+//                    assignment.getDueDate());
+//        }).collect(Collectors.toList());
         return assignments.stream().map(assignment -> {
-            String downloadUrl = fileUploadService.getDownloadUrl(assignment.getFilePath());
+            String questionDownloadUrl = fileUploadService.getDownloadUrl(assignment.getQuestionFilePath());
+//            String solutionDownloadUrl = fileUploadService.getDownloadUrl(assignment.getSolutionFilePath());
             return new AssignmentDto(
                     assignment.getId(),
                     assignment.getTitle(),
                     assignment.getContent(),
-                    assignment.getFilePath(),
-                    downloadUrl,
+                    assignment.getQuestionFilePath(),
+                    assignment.getSolutionFilePath(),
+                    questionDownloadUrl,
+//                    solutionDownloadUrl,
                     assignment.getCreatedAt(),
                     assignment.getDueDate());
         }).collect(Collectors.toList());

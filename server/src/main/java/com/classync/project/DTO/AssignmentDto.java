@@ -3,20 +3,21 @@ package com.classync.project.DTO;
 import java.time.LocalDateTime;
 
 public class AssignmentDto {
-    private final Long id;
-    private final String title;
-    private final String content;
-    private final String filePath;
-    private final String downloadUrl;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime dueDate;
+    private Long id;
+    private String title;
+    private String content;
+    private String questionFilePath;
+    private String solutionFilePath;
+    private String downloadUrl;
+    private LocalDateTime createdAt;
+    private LocalDateTime dueDate;
 
-    public AssignmentDto(Long id, String title, String content, String filePath, String downloadUrl,
-            LocalDateTime createdAt, LocalDateTime dueDate) {
+    public AssignmentDto(Long id, String title, String content, String questionFilePath, String solutionFilePath, String downloadUrl, LocalDateTime createdAt, LocalDateTime dueDate) {
         this.id = id;
         this.title = title;
         this.content = content;
-        this.filePath = filePath;
+        this.questionFilePath = questionFilePath;
+        this.solutionFilePath = solutionFilePath;
         this.downloadUrl = downloadUrl;
         this.createdAt = createdAt;
         this.dueDate = dueDate;
@@ -34,8 +35,12 @@ public class AssignmentDto {
         return content;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public String getQuestionFilePath() {
+        return questionFilePath;
+    }
+
+    public String getSolutionFilePath() {
+        return solutionFilePath;
     }
 
     public String getDownloadUrl() {
