@@ -11,6 +11,7 @@ import com.classync.project.entity.Assignment;
 import com.classync.project.entity.Classroom;
 import com.classync.project.entity.Submission;
 import com.classync.project.entity.User;
+import com.classync.project.repository.AssignmentRepository;
 import com.classync.project.repository.SubmissionRepository;
 
 import java.io.File;
@@ -32,17 +33,22 @@ public class AssignmentService {
 
     private final SubmissionRepository submissionRepository;
 
+    private final AssignmentRepository assignmentRepository;
+
     public AssignmentService(AssignmentDAO assignmentDAO, ClassroomDAO classroomDAO,
-            UserDAO userDAO, FileUploadService fileUpload, SubmissionRepository submissionRepository) {
+            UserDAO userDAO, FileUploadService fileUpload, SubmissionRepository submissionRepository,
+            AssignmentRepository assignmentRepository) {
         this.assignmentDAO = assignmentDAO;
         this.classroomDAO = classroomDAO;
         this.userDAO = userDAO;
         this.fileUploadService = fileUpload;
         this.submissionRepository = submissionRepository;
+        this.assignmentRepository = assignmentRepository;
     }
 
-    public Assignment createAssignment(String title, String content, MultipartFile questionFile, MultipartFile solutionFile, Long classroomId,
-                                       int createdById, LocalDateTime dueDate) throws IOException {
+    public Assignment createAssignment(String title, String content, MultipartFile questionFile,
+            MultipartFile solutionFile, Long classroomId,
+            int createdById, LocalDateTime dueDate) throws IOException {
         Classroom classroom = classroomDAO.findById(classroomId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid classroom ID"));
 
@@ -60,7 +66,8 @@ public class AssignmentService {
         // Handle question file upload
         if (questionFile != null && !questionFile.isEmpty()) {
             String questionFileName = System.currentTimeMillis() + "_Q_" + questionFile.getOriginalFilename();
-            // File convertedFile = fileUploadService.convertToFile(questionFile, questionFileName);
+            // File convertedFile = fileUploadService.convertToFile(questionFile,
+            // questionFileName);
             String questionFileUrl = fileUploadService.uploadAssignment(questionFile, questionFileName);
             assignment.setQuestionFilePath(questionFileUrl);
         }
@@ -68,14 +75,14 @@ public class AssignmentService {
         // Handle solution file upload
         if (solutionFile != null && !solutionFile.isEmpty()) {
             String solutionFileName = System.currentTimeMillis() + "_S_" + solutionFile.getOriginalFilename();
-            // File convertedFile = fileUploadService.convertToFile(solutionFile, solutionFileName);
+            // File convertedFile = fileUploadService.convertToFile(solutionFile,
+            // solutionFileName);
             String solutionFileUrl = fileUploadService.uploadTeacherSolution(solutionFile, solutionFileName);
             assignment.setSolutionFilePath(solutionFileUrl);
         }
 
         return assignmentDAO.save(assignment);
     }
-
 
     public Submission createSubmission(Assignment assignment, MultipartFile file, Long classroomId, int submittedbyId)
             throws IOException {
@@ -110,20 +117,22 @@ public class AssignmentService {
         // Retrieve assignments from the database
         List<Assignment> assignments = assignmentDAO.findByClassroom(classroom);
 
-//        return assignments.stream().map(assignment -> {
-//            String downloadUrl = fileUploadService.getDownloadUrl(assignment.getFilePath());
-//            return new AssignmentDto(
-//                    assignment.getId(),
-//                    assignment.getTitle(),
-//                    assignment.getContent(),
-//                    assignment.getFilePath(),
-//                    downloadUrl,
-//                    assignment.getCreatedAt(),
-//                    assignment.getDueDate());
-//        }).collect(Collectors.toList());
+        // return assignments.stream().map(assignment -> {
+        // String downloadUrl =
+        // fileUploadService.getDownloadUrl(assignment.getFilePath());
+        // return new AssignmentDto(
+        // assignment.getId(),
+        // assignment.getTitle(),
+        // assignment.getContent(),
+        // assignment.getFilePath(),
+        // downloadUrl,
+        // assignment.getCreatedAt(),
+        // assignment.getDueDate());
+        // }).collect(Collectors.toList());
         return assignments.stream().map(assignment -> {
             String questionDownloadUrl = fileUploadService.getDownloadUrl(assignment.getQuestionFilePath());
-//            String solutionDownloadUrl = fileUploadService.getDownloadUrl(assignment.getSolutionFilePath());
+            // String solutionDownloadUrl =
+            // fileUploadService.getDownloadUrl(assignment.getSolutionFilePath());
             return new AssignmentDto(
                     assignment.getId(),
                     assignment.getTitle(),
@@ -131,7 +140,43 @@ public class AssignmentService {
                     assignment.getQuestionFilePath(),
                     assignment.getSolutionFilePath(),
                     questionDownloadUrl,
-//                    solutionDownloadUrl,
+                    // solutionDownloadUrl,
+                    assignment.getCreatedAt(),
+                    assignment.getDueDate());
+        }).collect(Collectors.toList());
+    }
+
+    public List<AssignmentDto> getAssignmentsByDueDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Assignment> assignments = assignmentRepository.findByDueDateBetween(startDate, endDate);
+
+        return assignments.stream().map(assignment -> {
+            String questionDownloadUrl = fileUploadService.getDownloadUrl(assignment.getQuestionFilePath());
+            return new AssignmentDto(
+                    assignment.getId(),
+                    assignment.getTitle(),
+                    assignment.getContent(),
+                    assignment.getQuestionFilePath(),
+                    assignment.getSolutionFilePath(),
+                    questionDownloadUrl,
+                    assignment.getCreatedAt(),
+                    assignment.getDueDate());
+        }).collect(Collectors.toList());
+    }
+
+    public List<AssignmentDto> getAssignmentsByDueDateRangeAndClassroom(
+            LocalDateTime startDate, LocalDateTime endDate, Long classroomId) {
+        List<Assignment> assignments = assignmentRepository.findByDueDateBetweenAndClassroomId(startDate, endDate,
+        classroomId);
+        
+        return assignments.stream().map(assignment -> {
+            String questionDownloadUrl = fileUploadService.getDownloadUrl(assignment.getQuestionFilePath());
+            return new AssignmentDto(
+                    assignment.getId(),
+                    assignment.getTitle(),
+                    assignment.getContent(),
+                    assignment.getQuestionFilePath(),
+                    assignment.getSolutionFilePath(),
+                    questionDownloadUrl,
                     assignment.getCreatedAt(),
                     assignment.getDueDate());
         }).collect(Collectors.toList());

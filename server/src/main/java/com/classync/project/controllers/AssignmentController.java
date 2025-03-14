@@ -9,6 +9,7 @@ import com.classync.project.DTO.EvaluationRequest;
 import com.classync.project.DTO.EvaluationResponse;
 import com.classync.project.repository.SubmissionRepository;
 import org.apache.http.HttpStatus;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.classync.project.DTO.AssignmentDto;
 import com.classync.project.entity.Assignment;
+import com.classync.project.entity.Classroom;
 import com.classync.project.entity.Submission;
 import com.classync.project.repository.AssignmentRepository;
 import com.classync.project.services.SubmissionService;
@@ -43,7 +45,7 @@ public class AssignmentController {
     private final RestTemplate restTemplate;
 
     public AssignmentController(AssignmentService assignmentService, AssignmentRepository assignmentRepository,
-            SubmissionService submissionService , SubmissionRepository submissionRepository , RestTemplate restTemplate) {
+            SubmissionService submissionService, SubmissionRepository submissionRepository, RestTemplate restTemplate) {
         this.assignmentService = assignmentService;
         this.assignmentRepository = assignmentRepository;
         this.submissionService = submissionService;
@@ -61,7 +63,8 @@ public class AssignmentController {
             @RequestParam int createdById,
             @RequestParam LocalDateTime dueDate) {
         try {
-            Assignment assignment = assignmentService.createAssignment(title, content, file, solutionFile, classroomId, createdById, dueDate);
+            Assignment assignment = assignmentService.createAssignment(title, content, file, solutionFile, classroomId,
+                    createdById, dueDate);
             return ResponseEntity.ok(assignment);
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Failed to upload file.");
@@ -70,6 +73,27 @@ public class AssignmentController {
         }
     }
 
+    // @GetMapping("/assignments")
+    // public List<AssignmentDto> getAssignments(
+    // @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    // LocalDateTime startDate,
+    // @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    // LocalDateTime endDate) {
+    // return assignmentService.getAssignmentsByDueDateRange(startDate, endDate);
+    // }
+
+    @GetMapping("/assignments")
+    public List<AssignmentDto> getAssignments(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(required = false) String classroom) {
+        if (classroom == null || classroom.equals("All classes")) {
+            return assignmentService.getAssignmentsByDueDateRange(startDate, endDate);
+        } else {
+            Long classroomId = Long.parseLong(classroom);
+            return assignmentService.getAssignmentsByDueDateRangeAndClassroom(startDate, endDate, classroomId);
+        }
+    }
 
     @GetMapping("/{classroomId}/assignments")
     public ResponseEntity<?> getAssignmentsByClassroom(@PathVariable Long classroomId) {
@@ -149,7 +173,6 @@ public class AssignmentController {
         }
     }
 
-
     @GetMapping("/submissions/{submissionId}/evaluate")
     public ResponseEntity<?> evaluateSubmission(@PathVariable Long submissionId) {
         System.out.println("Evaluating submission with ID: " + submissionId);
@@ -169,8 +192,6 @@ public class AssignmentController {
         String submissionUrl = submission.getFileUrl();
         String solutionUrl = assignment.getSolutionFilePath();
 
-
-
         // Calling Flask API for evaluation
         String flaskApiUrl = "http://127.0.0.1:5000/api/evaluate/submission";
         EvaluationRequest request = new EvaluationRequest(submissionUrl, solutionUrl);
@@ -179,10 +200,9 @@ public class AssignmentController {
         try {
             response = restTemplate.postForEntity(flaskApiUrl, request, EvaluationResponse.class);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body("Error during evaluation: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+                    .body("Error during evaluation: " + e.getMessage());
         }
-
-
 
         double points = response.getBody().getScore();
 
@@ -192,21 +212,24 @@ public class AssignmentController {
         submission.setGrade(grade);
         submissionRepository.save(submission);
 
-        //  response with updated grade
+        // response with updated grade
         EvaluationResponse evaluationResponse = new EvaluationResponse(points, response.getBody().getFeedback(), grade);
 
         return ResponseEntity.ok(evaluationResponse);
     }
 
     private String convertPointsToGrade(double points) {
-        if (points >= 90) return "A+";
-        if (points >= 80) return "A";
-        if (points >= 70) return "B";
-        if (points >= 60) return "C";
-        if (points >= 50) return "D";
+        if (points >= 90)
+            return "A+";
+        if (points >= 80)
+            return "A";
+        if (points >= 70)
+            return "B";
+        if (points >= 60)
+            return "C";
+        if (points >= 50)
+            return "D";
         return "F";
     }
-
-
 
 }
