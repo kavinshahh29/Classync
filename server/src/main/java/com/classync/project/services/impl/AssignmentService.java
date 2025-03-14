@@ -60,16 +60,16 @@ public class AssignmentService {
         // Handle question file upload
         if (questionFile != null && !questionFile.isEmpty()) {
             String questionFileName = System.currentTimeMillis() + "_Q_" + questionFile.getOriginalFilename();
-            File convertedFile = fileUploadService.convertToFile(questionFile, questionFileName);
-            String questionFileUrl = fileUploadService.uploadPdf(convertedFile, questionFileName);
+            // File convertedFile = fileUploadService.convertToFile(questionFile, questionFileName);
+            String questionFileUrl = fileUploadService.uploadAssignment(questionFile, questionFileName);
             assignment.setQuestionFilePath(questionFileUrl);
         }
 
         // Handle solution file upload
         if (solutionFile != null && !solutionFile.isEmpty()) {
             String solutionFileName = System.currentTimeMillis() + "_S_" + solutionFile.getOriginalFilename();
-            File convertedFile = fileUploadService.convertToFile(solutionFile, solutionFileName);
-            String solutionFileUrl = fileUploadService.uploadPdf(convertedFile, solutionFileName);
+            // File convertedFile = fileUploadService.convertToFile(solutionFile, solutionFileName);
+            String solutionFileUrl = fileUploadService.uploadTeacherSolution(solutionFile, solutionFileName);
             assignment.setSolutionFilePath(solutionFileUrl);
         }
 
@@ -93,8 +93,8 @@ public class AssignmentService {
 
         if (file != null && !file.isEmpty()) {
             String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            File convertedFile = fileUploadService.convertToFile(file, fileName);
-            String uploadedLink = fileUploadService.uploadSubmission(convertedFile, fileName);
+            // File convertedFile = fileUploadService.convertToFile(file, fileName);
+            String uploadedLink = fileUploadService.uploadSubmission(file, fileName);
             submission.setFileUrl(uploadedLink);
             System.out.println("Uploaded link : " + uploadedLink);
         }
