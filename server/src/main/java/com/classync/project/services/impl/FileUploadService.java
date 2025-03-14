@@ -38,7 +38,7 @@ public class FileUploadService {
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("application/pdf").build();
 
         InputStream inputStream = FileUploadService.class.getClassLoader()
-                .getResourceAsStream("doc-scheduler-6e8de-firebase-adminsdk-ed6lt-6ddee1704e.json");
+                .getResourceAsStream("classync-firebase-storage-private-key.json");
 
         if (inputStream == null) {
             throw new IOException("Firebase credentials file not found");
@@ -62,7 +62,7 @@ public class FileUploadService {
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("application/pdf").build();
 
         InputStream inputStream = FileUploadService.class.getClassLoader()
-                .getResourceAsStream("doc-scheduler-6e8de-firebase-adminsdk-ed6lt-6ddee1704e.json");
+                .getResourceAsStream("classync-firebase-storage-private-key.json");
 
         if (inputStream == null) {
             throw new IOException("Firebase credentials file not found");
