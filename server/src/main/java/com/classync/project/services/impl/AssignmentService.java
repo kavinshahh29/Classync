@@ -63,25 +63,46 @@ public class AssignmentService {
         assignment.setClassroom(classroom);
         assignment.setCreatedBy(createdBy);
 
-        // Handle question file upload
         if (questionFile != null && !questionFile.isEmpty()) {
             String questionFileName = System.currentTimeMillis() + "_Q_" + questionFile.getOriginalFilename();
-            // File convertedFile = fileUploadService.convertToFile(questionFile,
-            // questionFileName);
             String questionFileUrl = fileUploadService.uploadAssignment(questionFile, questionFileName);
             assignment.setQuestionFilePath(questionFileUrl);
         }
 
-        // Handle solution file upload
         if (solutionFile != null && !solutionFile.isEmpty()) {
             String solutionFileName = System.currentTimeMillis() + "_S_" + solutionFile.getOriginalFilename();
-            // File convertedFile = fileUploadService.convertToFile(solutionFile,
-            // solutionFileName);
             String solutionFileUrl = fileUploadService.uploadTeacherSolution(solutionFile, solutionFileName);
             assignment.setSolutionFilePath(solutionFileUrl);
         }
 
         return assignmentDAO.save(assignment);
+    }
+
+    public Assignment updateAssignment(
+            Long assignmentId, String title, String content, LocalDateTime dueDate,
+            MultipartFile questionFile, MultipartFile solutionFile) throws IOException {
+        Assignment assignment = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> new RuntimeException("Assignment not found"));
+
+        assignment.setTitle(title);
+        assignment.setContent(content);
+        assignment.setDueDate(dueDate);
+
+        // Update assignment file only if a new file is provided
+        if (questionFile != null && !questionFile.isEmpty()) {
+            String questionFileName = System.currentTimeMillis() + "_Q_" + questionFile.getOriginalFilename();
+            String questionFileUrl = fileUploadService.uploadAssignment(questionFile, questionFileName);
+            assignment.setQuestionFilePath(questionFileUrl);
+        }
+
+        // Update solution file only if a new file is provided
+        if (solutionFile != null && !solutionFile.isEmpty()) {
+            String solutionFileName = System.currentTimeMillis() + "_S_" + solutionFile.getOriginalFilename();
+            String solutionFileUrl = fileUploadService.uploadTeacherSolution(solutionFile, solutionFileName);
+            assignment.setSolutionFilePath(solutionFileUrl);
+        }
+
+        return assignmentRepository.save(assignment);
     }
 
     public Submission createSubmission(Assignment assignment, MultipartFile file, Long classroomId, int submittedbyId)
@@ -166,8 +187,8 @@ public class AssignmentService {
     public List<AssignmentDto> getAssignmentsByDueDateRangeAndClassroom(
             LocalDateTime startDate, LocalDateTime endDate, Long classroomId) {
         List<Assignment> assignments = assignmentRepository.findByDueDateBetweenAndClassroomId(startDate, endDate,
-        classroomId);
-        
+                classroomId);
+
         return assignments.stream().map(assignment -> {
             String questionDownloadUrl = fileUploadService.getDownloadUrl(assignment.getQuestionFilePath());
             return new AssignmentDto(

@@ -30,6 +30,8 @@ import com.classync.project.entity.Submission;
 import com.classync.project.repository.AssignmentRepository;
 import com.classync.project.services.SubmissionService;
 import com.classync.project.services.impl.AssignmentService;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", allowCredentials = "true", methods = {
@@ -72,15 +74,6 @@ public class AssignmentController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-    // @GetMapping("/assignments")
-    // public List<AssignmentDto> getAssignments(
-    // @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    // LocalDateTime startDate,
-    // @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    // LocalDateTime endDate) {
-    // return assignmentService.getAssignmentsByDueDateRange(startDate, endDate);
-    // }
 
     @GetMapping("/assignments")
     public List<AssignmentDto> getAssignments(
@@ -126,6 +119,21 @@ public class AssignmentController {
             return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR)
                     .body("An error occurred while fetching assignments: " + ex.getMessage());
         }
+    }
+
+    @PutMapping("/{assignmentId}")
+    public ResponseEntity<Assignment> updateAssignment(
+            @PathVariable Long assignmentId,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String content,
+            @RequestParam(required = false) LocalDateTime dueDate,
+            @RequestParam(required = false) MultipartFile questionFile,
+            @RequestParam(required = false) MultipartFile solutionFile) throws IOException {
+
+        Assignment updatedAssignment = assignmentService.updateAssignment(
+                assignmentId, title, content, dueDate, questionFile, solutionFile);
+
+        return ResponseEntity.ok(updatedAssignment);
     }
 
     @PostMapping("/submissions/add")

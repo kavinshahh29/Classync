@@ -56,10 +56,10 @@ public class ClassroomService {
         // System.err.println("TEACHER role not found in the database");
         // return new IllegalArgumentException("TEACHER role not found");
         // });
-        Role teacherRole = roleDAO.findByName("CREATER")
+        Role teacherRole = roleDAO.findByName("CREATOR")
                 .orElseThrow(() -> {
-                    System.err.println("CREATER role not found in the database");
-                    return new IllegalArgumentException("CREATER role not found");
+                    System.err.println("CREATOR role not found in the database");
+                    return new IllegalArgumentException("CREATOR role not found");
                 });
 
         // Assign the creator as a TEACHER
