@@ -31,6 +31,9 @@ public class Announcement {
 
     private LocalDateTime updatedAt;
 
+    @Column
+    private String fileUrl;
+
     @PreUpdate
     public void setUpdatedAt() {
         this.updatedAt = LocalDateTime.now();
@@ -42,6 +45,14 @@ public class Announcement {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getFileUrl() {
+        return this.fileUrl;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
     }
 
     public String getTitle() {
