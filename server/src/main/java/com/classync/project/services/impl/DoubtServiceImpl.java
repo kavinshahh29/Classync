@@ -37,14 +37,12 @@ public class DoubtServiceImpl implements DoubtService {
 
     @Override
     public Doubt createDoubt(DoubtDto doubtRequest) {
-        System.out.println("Doubt req : " + doubtRequest);
-        // Fetch User and Classroom
+        // System.out.println("Doubt req : " + doubtRequest);
         User user = userRepository.findById(doubtRequest.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         Classroom classroom = classroomRepository.findById(doubtRequest.getClassroomId())
                 .orElseThrow(() -> new IllegalArgumentException("Classroom not found"));
 
-        // Create Doubt
         Doubt doubt = new Doubt();
         doubt.setTitle(doubtRequest.getTitle());
         doubt.setContent(doubtRequest.getContent());
@@ -87,12 +85,6 @@ public class DoubtServiceImpl implements DoubtService {
         User user = userRepository.findById(solutionDto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        // Prevent the user who posted the doubt from posting a solution
-        // if (Integer.valueOf(doubt.getCreatedBy().getId()).equals(user.getId())) {
-        // throw new IllegalArgumentException("You cannot post a solution to your own
-        // doubt.");
-        // }
-
         Solution solution = new Solution(doubt, user, solutionDto.getContent());
         solutionRepository.save(solution);
 
@@ -103,5 +95,17 @@ public class DoubtServiceImpl implements DoubtService {
     public List<Solution> getSolutionsByDoubtId(Long doubtId) {
         List<Solution> solutions = solutionRepository.findByDoubtId(doubtId);
         return solutions;
+    }
+
+    @Override
+    public void deleteSolution(Long solutionId, String userEmail) {
+        Solution solution = solutionRepository.findById(solutionId)
+            .orElseThrow(() -> new IllegalArgumentException("Solution not found."));
+    
+        if (!solution.getCreatedBy().getEmail().equals(userEmail)) {
+            throw new IllegalArgumentException("You are not authorized to delete this solution.");
+        }
+    
+        solutionRepository.delete(solution);
     }
 }

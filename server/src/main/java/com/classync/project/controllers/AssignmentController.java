@@ -65,6 +65,11 @@ public class AssignmentController {
             @RequestParam int createdById,
             @RequestParam LocalDateTime dueDate) {
         try {
+
+            if (dueDate.isBefore(LocalDateTime.now())) {
+                return ResponseEntity.badRequest().body("Due date must be in the future.");
+            }
+            
             Assignment assignment = assignmentService.createAssignment(title, content, file, solutionFile, classroomId,
                     createdById, dueDate);
             return ResponseEntity.ok(assignment);
@@ -122,19 +127,30 @@ public class AssignmentController {
     }
 
     @PutMapping("/{assignmentId}")
-    public ResponseEntity<Assignment> updateAssignment(
-            @PathVariable Long assignmentId,
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String content,
-            @RequestParam(required = false) LocalDateTime dueDate,
-            @RequestParam(required = false) MultipartFile questionFile,
-            @RequestParam(required = false) MultipartFile solutionFile) throws IOException {
+public ResponseEntity<?> updateAssignment(
+        @PathVariable Long assignmentId,
+        @RequestParam(required = false) String title,
+        @RequestParam(required = false) String content,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dueDate,
+        @RequestParam(required = false) MultipartFile questionFile,
+        @RequestParam(required = false) MultipartFile solutionFile) {
+    
+    try {
+        if (dueDate != null && dueDate.isBefore(LocalDateTime.now())) {
+            return ResponseEntity.badRequest().body("Due date must be in the future.");
+        }
 
         Assignment updatedAssignment = assignmentService.updateAssignment(
                 assignmentId, title, content, dueDate, questionFile, solutionFile);
 
         return ResponseEntity.ok(updatedAssignment);
+    } catch (IOException e) {
+        return ResponseEntity.status(500).body("Failed to upload file.");
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
     }
+}
+
 
     @PostMapping("/submissions/add")
     public ResponseEntity<?> submitAssignment(

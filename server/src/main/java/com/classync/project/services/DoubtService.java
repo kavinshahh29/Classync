@@ -24,4 +24,6 @@ public interface DoubtService {
     Solution postSolution(SolutionDto solutionDto);
 
     List<Solution> getSolutionsByDoubtId(Long DoubtId);
+
+    public void deleteSolution(Long solutionId, String userEmail);
 }

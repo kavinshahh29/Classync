@@ -49,4 +49,15 @@ public class CommentService {
 
         return commentRepository.findByAnnouncementOrderByCreatedAtAsc(announcement);
     }
+
+    public void deleteComment(Long commentId, String userEmail) {
+        Comment comment = commentRepository.findById(commentId)
+            .orElseThrow(() -> new IllegalArgumentException("Comment not found."));
+    
+        if (!comment.getAuthor().getEmail().equals(userEmail)) {
+            throw new IllegalArgumentException("You are not authorized to delete this comment.");
+        }
+    
+        commentRepository.delete(comment);
+    }
 }

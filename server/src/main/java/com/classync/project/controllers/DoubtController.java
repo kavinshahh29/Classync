@@ -5,13 +5,12 @@ import com.classync.project.DTO.SolutionDto;
 import com.classync.project.entity.Doubt;
 import com.classync.project.entity.Solution;
 import com.classync.project.services.DoubtService;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", allowCredentials = "true")
@@ -24,28 +23,17 @@ public class DoubtController {
         this.doubtService = doubtService;
     }
 
-    // Create a new doubt
     @PostMapping("/create")
     public ResponseEntity<Doubt> createDoubt(@RequestBody DoubtDto doubtRequest) {
         Doubt savedDoubt = doubtService.createDoubt(doubtRequest);
         return ResponseEntity.ok(savedDoubt);
     }
 
-    // Get all doubts
     @GetMapping
     public ResponseEntity<List<Doubt>> getAllDoubts() {
         return ResponseEntity.ok(doubtService.getAllDoubts());
     }
 
-    // Get doubt by ID with error handling
-    // @GetMapping("/{id}")
-    // public ResponseEntity<?> getDoubtById(@PathVariable Long id) {
-    // Optional<Doubt> doubt = doubtService.getDoubtById(id);
-    // return doubt.map(ResponseEntity::ok)
-    // .orElse(ResponseEntity.status(404).body("Doubt not found"));
-    // }
-
-    // Delete a doubt by ID with validation
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteDoubt(@PathVariable Long id) {
         if (!doubtService.existsById(id)) {
@@ -73,4 +61,17 @@ public class DoubtController {
         return ResponseEntity.ok(solutions);
     }
 
+    @DeleteMapping("/solutions/{solutionId}")
+    public ResponseEntity<?> deleteSolution(
+            @PathVariable Long solutionId,
+            @RequestParam String userEmail) {
+        try {
+            doubtService.deleteSolution(solutionId, userEmail);
+            return ResponseEntity.ok().body("Solution deleted successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete solution.");
+        }
+    }
 }

@@ -33,7 +33,7 @@ public class ClassroomController {
     private final ClassroomService classroomService;
     private final UserClassroomService userClassroomService;
 
-    public ClassroomController(ClassroomService classroomService , UserClassroomService userClassroomService) {
+    public ClassroomController(ClassroomService classroomService, UserClassroomService userClassroomService) {
         this.classroomService = classroomService;
         this.userClassroomService = userClassroomService;
     }
@@ -51,16 +51,19 @@ public class ClassroomController {
         Classroom classroom = classroomService.createClass(className, useremail);
 
         return ResponseEntity.ok(new ClassroomDetails(
+                classroom.getId(),
                 classroom.getClassName(),
                 classroom.getClassroomCode()));
     }
 
     @Getter
     public static class ClassroomDetails {
+        private final Long ClassroomId;
         private final String ClassName;
         private final String Classcode;
 
-        public ClassroomDetails(String className, String classcode) {
+        public ClassroomDetails(Long classroomId, String className, String classcode) {
+            this.ClassroomId = classroomId;
             this.ClassName = className;
             this.Classcode = classcode;
         }
@@ -92,9 +95,8 @@ public class ClassroomController {
         return ResponseEntity.ok(classrooms);
     }
 
-
     @GetMapping("/{classroomId}")
-    public ResponseEntity<?> getClassroomInfo(@PathVariable Long classroomId){
+    public ResponseEntity<?> getClassroomInfo(@PathVariable Long classroomId) {
         try {
             Classroom classroom = classroomService.getClassroomById(classroomId);
             return ResponseEntity.ok(classroom);
@@ -127,7 +129,7 @@ public class ClassroomController {
         if (newRole == null || (!newRole.equals("TEACHER") && !newRole.equals("STUDENT"))) {
             return ResponseEntity.badRequest().body(Map.of("error", "Invalid role"));
         }
-        
+
         boolean updated = userClassroomService.updateUserRole(userId, classRoomId, newRole);
         if (updated) {
             return ResponseEntity.ok(Map.of("message", "Role updated successfully"));
