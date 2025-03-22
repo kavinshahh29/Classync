@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @AllArgsConstructor
 @Getter
 @Setter
+@Table(name = "app_user")
 public class User {
 
     @Id
