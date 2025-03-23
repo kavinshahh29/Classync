@@ -14,6 +14,8 @@ Classync is an AI-powered platform designed to enhance classroom collaboration, 
 
 For more information, check out the **[User Guide](https://classync-demo.vercel.app/user-guide)**.  
 
+<img src="./assets/user-guide.gif"  />
+
 ## 💻 Tech Stack:
 <table align="center">
   <tr>
