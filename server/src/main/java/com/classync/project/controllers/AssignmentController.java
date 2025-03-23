@@ -89,16 +89,39 @@ public class AssignmentController {
         }
     }
 
-    @GetMapping("/assignments")
+    // @GetMapping("/assignments")
+    // public List<AssignmentDto> getAssignments(
+    // @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    // LocalDateTime startDate,
+    // @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    // LocalDateTime endDate,
+    // @RequestParam(required = false) String classroom) {
+    // if (classroom == null || classroom.equals("All classes")) {
+    // return assignmentService.getAssignmentsByDueDateRange(startDate, endDate);
+    // } else {
+    // Long classroomId = Long.parseLong(classroom);
+    // return assignmentService.getAssignmentsByDueDateRangeAndClassroom(startDate,
+    // endDate, classroomId);
+    // }
+    // }
+
+    @GetMapping("/user-assignments")
     public List<AssignmentDto> getAssignments(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
-            @RequestParam(required = false) String classroom) {
+            @RequestParam(required = false) String classroom,
+            @RequestParam String useremail) {
+        System.out.println("Received classroom parameter: " + classroom); // Log the classroom parameter
         if (classroom == null || classroom.equals("All classes")) {
-            return assignmentService.getAssignmentsByDueDateRange(startDate, endDate);
+            System.out.println("============>assignment fetching for all classrooms");
+            return assignmentService.getAssignmentsByDueDateRangeAndUser(startDate, endDate, useremail);
         } else {
-            Long classroomId = Long.parseLong(classroom);
-            return assignmentService.getAssignmentsByDueDateRangeAndClassroom(startDate, endDate, classroomId);
+            try {
+                Long classroomId = Long.parseLong(classroom); // Convert classroom to Long
+                return assignmentService.getAssignmentsByDueDateRangeAndClassroom(startDate, endDate, classroomId);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid classroom ID: " + classroom);
+            }
         }
     }
 
@@ -224,7 +247,6 @@ public class AssignmentController {
         String submissionUrl = submission.getFileUrl();
         String solutionUrl = assignment.getSolutionFilePath();
 
-        // Calling Flask API for evaluation
         String flaskApiUrl = "http://127.0.0.1:5000/api/evaluate/submission";
         EvaluationRequest request = new EvaluationRequest(submissionUrl, solutionUrl);
 

@@ -16,6 +16,11 @@ public class UserClassroomServiceImpl implements UserClassroomService {
 
     private RoleRepository roleRepository;
 
+    @Override
+    public boolean isUserInClassroom(Long userId, Long classroomId) {
+        return userClassroomRepository.existsByUserIdAndClassroomId(userId, classroomId);
+    }
+    
     public UserClassroomServiceImpl(UserClassroomRepository userClassroomRepository, RoleRepository roleRepository) {
         this.userClassroomRepository = userClassroomRepository;
         this.roleRepository = roleRepository;

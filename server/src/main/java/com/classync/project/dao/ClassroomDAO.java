@@ -14,4 +14,5 @@ public interface ClassroomDAO extends JpaRepository<Classroom, Long> {
     boolean existsByClassroomCode(String classroomCode);
 
     boolean existsByClassName(String className);
+
 }

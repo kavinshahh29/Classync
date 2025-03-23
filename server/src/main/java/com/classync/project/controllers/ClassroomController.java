@@ -137,4 +137,13 @@ public class ClassroomController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found"));
         }
     }
+
+    @GetMapping("/{classroomId}/check-access")
+    public ResponseEntity<?> checkUserAccess(
+            @PathVariable Long classroomId,
+            @RequestParam Long userId) {
+
+        boolean isMember = userClassroomService.isUserInClassroom(userId, classroomId);
+        return ResponseEntity.ok(Map.of("isMember", isMember));
+    }
 }
