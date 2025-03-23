@@ -76,8 +76,7 @@ public class UserController {
         }
     }
 
-    @Getter
-        public record UserDetails(int id, String email, String fullName, String picture) {
-
+    public record UserDetails(int id, String email, String fullName, String picture) {
     }
+
 }
