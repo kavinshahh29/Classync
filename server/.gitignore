@@ -6,6 +6,8 @@ target/
 
 
 *.properties
+*.env
+
 
 ### STS ###
 .apt_generated

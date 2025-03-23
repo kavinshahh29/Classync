@@ -4,6 +4,9 @@ __pycache__/
 *$py.class
 
 chroma_db
+chroma_db/*
+!chroma_db/README.md
+*.pdf
 
 # C extensions
 *.so
