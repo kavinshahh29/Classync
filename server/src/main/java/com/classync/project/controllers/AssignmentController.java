@@ -229,11 +229,13 @@ public ResponseEntity<?> updateAssignment(
         }
 
         double points = response.getBody().getScore();
-
+        String feedback = response.getBody().getFeedback();
         // points to grade
         String grade = convertPointsToGrade(points);
 
         submission.setGrade(grade);
+        submission.setFeedback(feedback);
+        
         submissionRepository.save(submission);
 
         // response with updated grade
