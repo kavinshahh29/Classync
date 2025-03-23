@@ -5,6 +5,7 @@ import lombok.Getter;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -50,7 +51,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/api/user")
+    @GetMapping(value = "/api/user", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAuthenticatedUser(@AuthenticationPrincipal OidcUser oidcUser) {
         if (oidcUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
@@ -76,18 +77,7 @@ public class UserController {
     }
 
     @Getter
-    public static class UserDetails {
-        private final int id;
-        private final String email;
-        private final String fullName;
-        private final String picture;
-
-        public UserDetails(int id, String email, String fullName, String picture) {
-            this.id = id;
-            this.email = email;
-            this.fullName = fullName;
-            this.picture = picture;
-        }
+        public record UserDetails(int id, String email, String fullName, String picture) {
 
     }
 }
