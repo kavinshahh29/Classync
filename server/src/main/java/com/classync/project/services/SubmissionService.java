@@ -8,4 +8,6 @@ public interface SubmissionService {
     List<Submission> getSubmissionsByAssignmentAndUser(Long assignmentId, Long submittedById);
 
     void deleteSubmission(Long submissionId);
+
+    public List<Submission> getAllSubmissionsByAssignment(Long assignmentId);
 }
