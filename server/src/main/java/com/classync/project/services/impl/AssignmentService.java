@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.classync.project.DTO.AssignmentDto;
 import com.classync.project.dao.AssignmentDAO;
 import com.classync.project.dao.ClassroomDAO;
+import com.classync.project.dao.UserClassroomDAO;
 import com.classync.project.dao.UserDAO;
 import com.classync.project.entity.Assignment;
 import com.classync.project.entity.Classroom;
@@ -35,15 +36,19 @@ public class AssignmentService {
 
     private final AssignmentRepository assignmentRepository;
 
+    private final UserClassroomDAO userClassroomDAO;
+    
+
     public AssignmentService(AssignmentDAO assignmentDAO, ClassroomDAO classroomDAO,
             UserDAO userDAO, FileUploadService fileUpload, SubmissionRepository submissionRepository,
-            AssignmentRepository assignmentRepository) {
+            AssignmentRepository assignmentRepository, UserClassroomDAO userClassroomDAO) {
         this.assignmentDAO = assignmentDAO;
         this.classroomDAO = classroomDAO;
         this.userDAO = userDAO;
         this.fileUploadService = fileUpload;
         this.submissionRepository = submissionRepository;
         this.assignmentRepository = assignmentRepository;
+        this.userClassroomDAO = userClassroomDAO;
     }
 
     public Assignment createAssignment(String title, String content, MultipartFile questionFile,
@@ -138,22 +143,9 @@ public class AssignmentService {
         // Retrieve assignments from the database
         List<Assignment> assignments = assignmentDAO.findByClassroom(classroom);
 
-        // return assignments.stream().map(assignment -> {
-        // String downloadUrl =
-        // fileUploadService.getDownloadUrl(assignment.getFilePath());
-        // return new AssignmentDto(
-        // assignment.getId(),
-        // assignment.getTitle(),
-        // assignment.getContent(),
-        // assignment.getFilePath(),
-        // downloadUrl,
-        // assignment.getCreatedAt(),
-        // assignment.getDueDate());
-        // }).collect(Collectors.toList());
         return assignments.stream().map(assignment -> {
             String questionDownloadUrl = fileUploadService.getDownloadUrl(assignment.getQuestionFilePath());
-            // String solutionDownloadUrl =
-            // fileUploadService.getDownloadUrl(assignment.getSolutionFilePath());
+            
             return new AssignmentDto(
                     assignment.getId(),
                     assignment.getTitle(),
@@ -183,6 +175,28 @@ public class AssignmentService {
                     assignment.getDueDate());
         }).collect(Collectors.toList());
     }
+
+    public List<AssignmentDto> getAssignmentsByDueDateRangeAndUser(
+        LocalDateTime startDate, LocalDateTime endDate, String useremail) {
+    // Fetch all classrooms the user has joined
+    List<Classroom> userClassrooms = userClassroomDAO.findClassroomsByUserEmail(useremail);
+
+    // Fetch assignments for these classrooms within the date range
+    List<Assignment> assignments = assignmentRepository.findByDueDateBetweenAndClassroomIn(startDate, endDate, userClassrooms);
+
+    return assignments.stream().map(assignment -> {
+        String questionDownloadUrl = fileUploadService.getDownloadUrl(assignment.getQuestionFilePath());
+        return new AssignmentDto(
+                assignment.getId(),
+                assignment.getTitle(),
+                assignment.getContent(),
+                assignment.getQuestionFilePath(),
+                assignment.getSolutionFilePath(),
+                questionDownloadUrl,
+                assignment.getCreatedAt(),
+                assignment.getDueDate());
+    }).collect(Collectors.toList());
+}
 
     public List<AssignmentDto> getAssignmentsByDueDateRangeAndClassroom(
             LocalDateTime startDate, LocalDateTime endDate, Long classroomId) {

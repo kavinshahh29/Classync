@@ -13,13 +13,16 @@ import java.util.Optional;
 @Repository
 public interface AssignmentRepository extends JpaRepository<Assignment, Long> {
 
-    List<Assignment> findByClassroom(Classroom classroom);
+        List<Assignment> findByClassroom(Classroom classroom);
 
-    Optional<Assignment> findById(Long id);
+        Optional<Assignment> findById(Long id);
 
-    List<Assignment> findByDueDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+        List<Assignment> findByDueDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 
-    List<Assignment> findByDueDateBetweenAndClassroomId(
-            LocalDateTime startDate, LocalDateTime endDate, Long classroom);
+        List<Assignment> findByDueDateBetweenAndClassroomId(
+                        LocalDateTime startDate, LocalDateTime endDate, Long classroom);
+
+        List<Assignment> findByDueDateBetweenAndClassroomIn(
+                        LocalDateTime startDate, LocalDateTime endDate, List<Classroom> classrooms);
 
 }
