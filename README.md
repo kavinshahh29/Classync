@@ -51,6 +51,9 @@ For more information, check out the **[User Guide](https://classync-demo.vercel.
 </table>
 
 
+## Architecture 🏗️
+<img src="./assets/diagram.png"  />
+
 🚀 Feel free to contribute! Fork the repo and submit a pull request.
 
 
