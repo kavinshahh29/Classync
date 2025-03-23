@@ -4,10 +4,15 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.classync.project.DTO.EvaluationRequest;
 import com.classync.project.DTO.EvaluationResponse;
+import com.classync.project.DTO.SubmissionDTO;
+import com.classync.project.DTO.UpdateGradeRequest;
 import com.classync.project.repository.SubmissionRepository;
+import com.classync.project.repository.UserRepository;
+
 import org.apache.http.HttpStatus;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +32,7 @@ import com.classync.project.DTO.AssignmentDto;
 import com.classync.project.entity.Assignment;
 import com.classync.project.entity.Classroom;
 import com.classync.project.entity.Submission;
+import com.classync.project.entity.User;
 import com.classync.project.repository.AssignmentRepository;
 import com.classync.project.services.SubmissionService;
 import com.classync.project.services.impl.AssignmentService;
@@ -45,14 +51,17 @@ public class AssignmentController {
     private final SubmissionRepository submissionRepository;
     private final SubmissionService submissionService;
     private final RestTemplate restTemplate;
+    private final UserRepository userRepository;
 
     public AssignmentController(AssignmentService assignmentService, AssignmentRepository assignmentRepository,
-            SubmissionService submissionService, SubmissionRepository submissionRepository, RestTemplate restTemplate) {
+            SubmissionService submissionService, SubmissionRepository submissionRepository, RestTemplate restTemplate,
+            UserRepository userRepository) {
         this.assignmentService = assignmentService;
         this.assignmentRepository = assignmentRepository;
         this.submissionService = submissionService;
         this.submissionRepository = submissionRepository;
         this.restTemplate = restTemplate;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/add")
@@ -69,7 +78,7 @@ public class AssignmentController {
             if (dueDate.isBefore(LocalDateTime.now())) {
                 return ResponseEntity.badRequest().body("Due date must be in the future.");
             }
-            
+
             Assignment assignment = assignmentService.createAssignment(title, content, file, solutionFile, classroomId,
                     createdById, dueDate);
             return ResponseEntity.ok(assignment);
@@ -127,30 +136,29 @@ public class AssignmentController {
     }
 
     @PutMapping("/{assignmentId}")
-public ResponseEntity<?> updateAssignment(
-        @PathVariable Long assignmentId,
-        @RequestParam(required = false) String title,
-        @RequestParam(required = false) String content,
-        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dueDate,
-        @RequestParam(required = false) MultipartFile questionFile,
-        @RequestParam(required = false) MultipartFile solutionFile) {
-    
-    try {
-        if (dueDate != null && dueDate.isBefore(LocalDateTime.now())) {
-            return ResponseEntity.badRequest().body("Due date must be in the future.");
+    public ResponseEntity<?> updateAssignment(
+            @PathVariable Long assignmentId,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String content,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dueDate,
+            @RequestParam(required = false) MultipartFile questionFile,
+            @RequestParam(required = false) MultipartFile solutionFile) {
+
+        try {
+            if (dueDate != null && dueDate.isBefore(LocalDateTime.now())) {
+                return ResponseEntity.badRequest().body("Due date must be in the future.");
+            }
+
+            Assignment updatedAssignment = assignmentService.updateAssignment(
+                    assignmentId, title, content, dueDate, questionFile, solutionFile);
+
+            return ResponseEntity.ok(updatedAssignment);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Failed to upload file.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-        Assignment updatedAssignment = assignmentService.updateAssignment(
-                assignmentId, title, content, dueDate, questionFile, solutionFile);
-
-        return ResponseEntity.ok(updatedAssignment);
-    } catch (IOException e) {
-        return ResponseEntity.status(500).body("Failed to upload file.");
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
     }
-}
-
 
     @PostMapping("/submissions/add")
     public ResponseEntity<?> submitAssignment(
@@ -235,7 +243,7 @@ public ResponseEntity<?> updateAssignment(
 
         submission.setGrade(grade);
         submission.setFeedback(feedback);
-        
+
         submissionRepository.save(submission);
 
         // response with updated grade
@@ -256,6 +264,71 @@ public ResponseEntity<?> updateAssignment(
         if (points >= 50)
             return "D";
         return "F";
+    }
+
+    @PutMapping("/submissions/{submissionId}/update-grade")
+    public ResponseEntity<?> updateSubmissionGrade(
+            @PathVariable Long submissionId,
+            @RequestBody UpdateGradeRequest updateGradeRequest) {
+
+        try {
+            Optional<Submission> submissionOpt = submissionRepository.findById(submissionId);
+            if (submissionOpt.isEmpty()) {
+                return ResponseEntity.badRequest().body("Submission not found.");
+            }
+
+            Submission submission = submissionOpt.get();
+
+            // Update the grade and feedback
+            submission.setGrade(updateGradeRequest.getGrade());
+            submission.setFeedback(updateGradeRequest.getFeedback());
+
+            // Save the updated submission
+            submissionRepository.save(submission);
+
+            return ResponseEntity.ok(submission);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+                    .body("Error updating grade: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{assignmentId}/all-submissions")
+    public ResponseEntity<?> getAllSubmissionsForAssignment(@PathVariable Long assignmentId) {
+        try {
+            // Check if the assignment exists
+            Optional<Assignment> assignmentOpt = assignmentRepository.findById(assignmentId);
+            if (assignmentOpt.isEmpty()) {
+                return ResponseEntity.badRequest().body("Assignment not found.");
+            }
+
+            // Get all submissions for this assignment
+            List<Submission> submissions = submissionService.getAllSubmissionsByAssignment(assignmentId);
+
+            // Transform to include user information
+            List<SubmissionDTO> submissionDTOs = submissions.stream()
+                    .map(submission -> {
+                        User submitter = userRepository.findById(submission.getStudent().getId()).orElse(null);
+                        String submitterName = submitter != null ? submitter.getFullName() : "Unknown";
+                        String submitterEmail = submitter != null ? submitter.getEmail() : "Unknown";
+
+                        return new SubmissionDTO(
+                                submission.getId(),
+                                submission.getAssignment().getId(),
+                                submission.getStudent().getId(),
+                                submitterName,
+                                submitterEmail,
+                                submission.getFileUrl(),
+                                submission.getSubmittedAt(),
+                                submission.getGrade(),
+                                submission.getFeedback());
+                    })
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(submissionDTOs);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
 }

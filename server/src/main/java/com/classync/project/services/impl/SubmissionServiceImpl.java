@@ -27,4 +27,8 @@ public class SubmissionServiceImpl implements SubmissionService {
         submissionRepository.deleteById(submissionId);
     }
 
+    @Override
+    public List<Submission> getAllSubmissionsByAssignment(Long assignmentId) {
+        return submissionRepository.findAllByAssignmentId(assignmentId);
+    }
 }
