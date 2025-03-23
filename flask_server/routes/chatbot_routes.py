@@ -48,11 +48,10 @@ def chatbot_response():
         return jsonify({"response": "I don't have enough knowledge on this topic yet."}), 200
 
     # Extract and limit relevant data
-    relevant_data = " ".join(results["documents"][0][:500])  # Truncate to first 500 characters
+    relevant_data = " ".join(results["documents"][0][:500]) 
 
-    print(f"Relevant data: {relevant_data}")
+    # print(f"Relevant data: {relevant_data}")
 
-    # Call Mistral AI API
     headers = {
         "Authorization": f"Bearer {MISTRAL_API_KEY}",
         "Content-Type": "application/json"
@@ -77,7 +76,7 @@ def chatbot_response():
             }
         ],
         "temperature": 0.7,
-        "max_tokens": 150  # Limit response length
+        "max_tokens": 150 
     }
 
     response = requests.post(MISTRAL_API_URL, json=payload, headers=headers)
