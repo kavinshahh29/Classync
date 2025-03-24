@@ -30,4 +30,25 @@ public class UserClassroomController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @DeleteMapping("/unenroll")
+    public ResponseEntity<String> unenrollFromClassroom(@RequestBody Map<String, String> request) {
+        try {
+            String useremail = request.get("useremail");
+            Long classroomId = Long.parseLong(request.get("classroomId"));
+
+            boolean success = userClassroomService.unenrollStudent(useremail, classroomId);
+
+            if (success) {
+                return ResponseEntity.ok("Successfully unenrolled from classroom");
+            } else {
+                return ResponseEntity.badRequest()
+                        .body("Unable to unenroll. Only students can unenroll from classrooms.");
+            }
+        } catch (RuntimeException e) {
+            System.out.println("===================> " + e.getMessage());
+            
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
