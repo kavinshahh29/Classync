@@ -24,6 +24,7 @@ import com.classync.project.services.impl.ClassroomService;
 
 import lombok.Getter;
 
+// http://localhost:8080/api/classrooms/classname?classCode=${classCode}
 @RestController
 @CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", allowCredentials = "true", methods = {
         RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS })
@@ -36,6 +37,29 @@ public class ClassroomController {
     public ClassroomController(ClassroomService classroomService, UserClassroomService userClassroomService) {
         this.classroomService = classroomService;
         this.userClassroomService = userClassroomService;
+    }
+
+    @GetMapping("/classname/{classCode}")
+    public ResponseEntity<?> getClassName(@PathVariable String classCode) {
+        try {
+            com.google.common.base.Optional<Classroom> classroomOpt = classroomService.getClassroomByCode(classCode);
+
+            if (!classroomOpt.isPresent()) {
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Classroom not found with the given code");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            }
+
+            Classroom classroom = classroomOpt.get();
+            return ResponseEntity.ok(new ClassroomDetails(
+                    classroom.getId(),
+                    classroom.getClassName(),
+                    classroom.getClassroomCode()));
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
 
     @GetMapping("/all")
@@ -98,6 +122,7 @@ public class ClassroomController {
     @GetMapping("/{classroomId}")
     public ResponseEntity<?> getClassroomInfo(@PathVariable Long classroomId) {
         try {
+            System.err.println("getting classroom in!!");
             Classroom classroom = classroomService.getClassroomById(classroomId);
             return ResponseEntity.ok(classroom);
         } catch (Exception e) {
