@@ -52,7 +52,7 @@ For more information, check out the **[User Guide](https://classync-demo.vercel.
 
 
 ## Architecture 🏗️
-<img src="./assets/diagram.png"  />
+<img src="./assets/diagram-2.png"  />
 
 🚀 Feel free to contribute! Fork the repo and submit a pull request.
 
