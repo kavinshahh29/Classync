@@ -9,6 +9,7 @@ import com.classync.project.entity.Classroom;
 import com.classync.project.entity.Role;
 import com.classync.project.entity.User;
 import com.classync.project.entity.UserClassroom;
+import com.classync.project.repository.ClassRepository;
 
 import org.springframework.stereotype.Service;
 
@@ -26,18 +27,26 @@ public class ClassroomService {
     private final UserDAO userDAO;
     private final UserClassroomDAO userClassroomDAO;
     private final RoleDAO roleDAO;
+    private final ClassRepository classroomRepository;
 
+    public com.google.common.base.Optional<Classroom> getClassroomByCode(String classCode) {
+        // You'll need to implement this method based on your repository structure
+        // This is a sample implementation assuming you have a JPA repository
+        return classroomRepository.findByClassroomCode(classCode);
+    }
 
-    public List<Classroom> getAllClassrooms(){
-        return  this.classroomDAO.findAll();
+    public List<Classroom> getAllClassrooms() {
+        return this.classroomDAO.findAll();
     }
 
     public ClassroomService(ClassroomDAO classroomDAO, UserDAO userDAO, UserClassroomDAO userClassroomDAO,
-            RoleDAO roleDAO) {
+            RoleDAO roleDAO, ClassRepository classRepository) {
         this.classroomDAO = classroomDAO;
         this.userDAO = userDAO;
         this.userClassroomDAO = userClassroomDAO;
         this.roleDAO = roleDAO;
+        this.classroomRepository = classRepository;
+
     }
 
     public Classroom createClass(String className, String useremail) {
@@ -158,12 +167,12 @@ public class ClassroomService {
     }
 
     public void updateParticipantRole(Long classroomId, String participantEmail, Role newRole) {
-        
+
     }
 
     public Classroom getClassroomById(Long classroomId) {
         return classroomDAO.findById(classroomId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid classroom ID"));
     }
-    
+
 }

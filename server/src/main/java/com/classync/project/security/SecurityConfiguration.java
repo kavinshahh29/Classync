@@ -40,10 +40,13 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/api/user/*").permitAll(); // Allow unauthenticated access to /api/user
                     auth.requestMatchers("/api/classrooms/create").authenticated();
+                    auth.requestMatchers("/api/classrooms/*").authenticated();
+
                     auth.requestMatchers("/api/announcements/*").authenticated(); // Require authentication for this
                     auth.requestMatchers("/api/user-classroom/*").authenticated();
                     auth.requestMatchers("/api/comments/*").authenticated(); // Allow authenticated users to comment
                     auth.requestMatchers("/api/doubts/*").authenticated(); // Allow authenticated users to comment
+                    auth.requestMatchers("/api/mail/*").authenticated();
                     auth.anyRequest().authenticated(); // Require authentication for all other endpoints // endpoint
                     // auth.anyRequest().authenticated(); // Require authentication for all other
                     // endpoints
