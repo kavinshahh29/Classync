@@ -41,6 +41,7 @@ public class SecurityConfiguration {
                     auth.requestMatchers("/api/user/*").permitAll(); // Allow unauthenticated access to /api/user
                     auth.requestMatchers("/api/classrooms/create").authenticated();
                     auth.requestMatchers("/api/classrooms/*").authenticated();
+                    auth.requestMatchers("/api/users/*").authenticated();
 
                     auth.requestMatchers("/api/announcements/*").authenticated(); // Require authentication for this
                     auth.requestMatchers("/api/userclassroom/*").authenticated();

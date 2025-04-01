@@ -23,8 +23,8 @@ public class MailService {
 
             Resend resend = new Resend(apiKey);
             SendEmailRequest sendEmailRequest = SendEmailRequest.builder()
-                    .from("Acme <onboarding@resend.dev>")
-                    // .from(senderEmail)
+                    .from(senderEmail)
+
                     .to(to)
                     .html("<strong>" + message + "</strong>")
                     .subject(subject)
