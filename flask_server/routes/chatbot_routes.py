@@ -41,8 +41,12 @@ def chatbot_response():
     if not class_id or not question:
         return jsonify({"error": "Missing required fields"}), 400
 
-    # Retrieve relevant materials from ChromaDB
-    results = collection.query(query_texts=[question], n_results=3)
+    # Retrieve relevant materials from ChromaDB - filter by class_id
+    results = collection.query(
+        query_texts=[question], 
+        n_results=3,
+        where={"class_id": class_id}  # Add this filter
+    )
 
     if not results["metadatas"] or not results["metadatas"][0]:
         return jsonify({"response": "I don't have enough knowledge on this topic yet."}), 200

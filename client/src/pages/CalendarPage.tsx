@@ -93,6 +93,7 @@ const CalendarPage: React.FC = () => {
                     withCredentials: true,
                 });
                 setAssignments(response.data);
+                console.log("assignments : ", response.data);
             } catch (error) {
                 console.error("Error fetching assignments", error);
                 toast.error("Failed to fetch assignments");
@@ -130,7 +131,7 @@ const CalendarPage: React.FC = () => {
             borderColor: color.border,
             textColor: "white",
             extendedProps: {
-                description: assignment.description || "No description provided",
+                description: assignment.content || "No description provided",
                 classId: assignment.classId,
             },
             className: "rounded-lg shadow-md p-2 font-medium text-sm"
@@ -177,7 +178,7 @@ const CalendarPage: React.FC = () => {
 
     const handleEventClick = (clickInfo: any) => {
         const { title, extendedProps } = clickInfo.event;
-        alert(`Assignment: ${title}\n${extendedProps.description}`);
+        toast.success(`Assignment: ${title}\n${extendedProps.description}`);
     };
 
     const customDayCell = (arg: any) => {
@@ -198,7 +199,7 @@ const CalendarPage: React.FC = () => {
     };
 
     return (
-        <div className="w-full font-sans bg-white rounded-lg shadow-lg p-5 mx-auto max-w-7xl mt-10 max-w-7xl mx-auto mt-10">
+        <div className="w-full font-sans bg-white rounded-lg shadow-lg p-5 mx-auto max-w-7xl mt-10">
             <style>
                 {`
                     .fc .fc-col-header-cell-cushion {
@@ -309,7 +310,7 @@ const CalendarPage: React.FC = () => {
                         ref={calendarRef}
                         plugins={[dayGridPlugin, interactionPlugin]}
                         initialView="dayGridWeek"
-                        initialDate="2025-03-14"
+                        initialDate={new Date()}
                         headerToolbar={false}
                         events={events}
                         dayMaxEvents={3}
