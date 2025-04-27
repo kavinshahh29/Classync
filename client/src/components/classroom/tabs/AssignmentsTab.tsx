@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Card,
@@ -64,7 +64,14 @@ const AssignmentsTab: React.FC<AssignmentsTabProps> = ({
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [filterStatus, setFilterStatus] = useState<"all" | "upcoming" | "past">("all");
   const navigate = useNavigate();
-
+  const [isStudent, setIsStudent] = useState(false);
+  useEffect(() => {
+    if (role === "CREATOR" || role === "TEACHER") {
+      setIsStudent(false);
+    } else {
+      setIsStudent(true);
+    }
+  }, [role]);
   const handleCreateAssignmentClose = () => {
     setShowModal(false);
     onAssignmentCreated();
@@ -240,10 +247,11 @@ const AssignmentsTab: React.FC<AssignmentsTabProps> = ({
                       navigate(`/classrooms/${classroomId}/assignments/${assignment.id}`)
                     }>
                     <CardHeader className="relative pb-2">
-
-                      <Badge className={`mb-2 ${dueStatus.color}`}>
-                        {dueStatus.text}
-                      </Badge>
+                      {isStudent && (
+                        <Badge className={`mb-2 ${dueStatus.color}`}>
+                          {dueStatus.text}
+                        </Badge>
+                      )}
                       <CardTitle className="text-xl font-semibold text-gray-800 pr-8">
                         {assignment.title}
                       </CardTitle>

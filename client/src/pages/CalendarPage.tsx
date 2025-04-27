@@ -50,32 +50,6 @@ const CalendarPage: React.FC = () => {
         fetchClassrooms();
     }, [useremail]);
 
-    // useEffect(() => {
-    //     const fetchAssignments = async () => {
-    //         setIsLoading(true);
-    //         const startDate = new Date();
-    //         const endDate = new Date(new Date().setMonth(startDate.getMonth() + 1));
-
-    //         try {
-    //             const response = await axios.get("http://localhost:8080/api/classrooms/assignments/assignments", {
-    //                 params: {
-    //                     startDate: startDate.toISOString(),
-    //                     endDate: endDate.toISOString(),
-    //                     classroom: classFilter === "All classes" ? null : classFilter,
-    //                 },
-    //                 withCredentials: true,
-    //             });
-    //             setAssignments(response.data);
-    //         } catch (error) {
-    //             console.error("Error fetching assignments", error);
-    //         } finally {
-    //             setIsLoading(false);
-    //         }
-    //     };
-
-    //     fetchAssignments();
-    // }, [classFilter]);
-
     useEffect(() => {
         const fetchAssignments = async () => {
             setIsLoading(true);

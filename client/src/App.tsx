@@ -12,10 +12,8 @@ import ViewAssignment from "./pages/ViewAssignment";
 import CalendarPage from "./pages/CalendarPage";
 import UpdateAssignment from "./pages/UpdateAssignment";
 import UserGuide from "./pages/user-guide/user-guide-page";
-import Footer from "./components/Footer";
 import AdminRoute from "./utils/AdminRoute";
 import AdminClassesPage from "./pages/AdminClassesPage";
-import ClassroomDetails from "./pages/ClassroomDetail";
 import AllUsersPage from "./pages/AllUserPage";
 import ClassroomParticipants from "./pages/ClassroomParticipant";
 
@@ -61,7 +59,6 @@ const App: React.FC = () => {
       <Router>
         <Nav />
 
-        {/* Content Section - Uses flex-grow to push the footer down */}
         <div className="flex-grow">
           <Routes>
             <Route element={<AdminRoute />}>
@@ -71,10 +68,6 @@ const App: React.FC = () => {
                 path="/classroom/:classroomId"
                 element={<ClassroomParticipants />}
               />
-              {/* <Route
-                path="/classroom/:classroomId"
-                element={<ClassroomDetails />}
-              /> */}
             </Route>
             <Route path="/" element={<Home />} />
             <Route path="/user-guide" element={<UserGuide />} />

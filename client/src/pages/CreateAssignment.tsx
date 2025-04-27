@@ -94,9 +94,6 @@ const CreateAssignment: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   </div>
 `;
 
-    
-
-
       // Send the email request
 
       for (const participant of participants) {

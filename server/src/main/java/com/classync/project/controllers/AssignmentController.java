@@ -89,22 +89,6 @@ public class AssignmentController {
         }
     }
 
-    // @GetMapping("/assignments")
-    // public List<AssignmentDto> getAssignments(
-    // @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    // LocalDateTime startDate,
-    // @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    // LocalDateTime endDate,
-    // @RequestParam(required = false) String classroom) {
-    // if (classroom == null || classroom.equals("All classes")) {
-    // return assignmentService.getAssignmentsByDueDateRange(startDate, endDate);
-    // } else {
-    // Long classroomId = Long.parseLong(classroom);
-    // return assignmentService.getAssignmentsByDueDateRangeAndClassroom(startDate,
-    // endDate, classroomId);
-    // }
-    // }
-
     @GetMapping("/user-assignments")
     public List<AssignmentDto> getAssignments(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
