@@ -10,8 +10,10 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 export default function Nav() {
-  const user = useSelector((state: any) => state.user.user) || null;
-  const useremail = localStorage.getItem("useremail");
+  const user = useSelector((state: any) => state.user.user);
+
+  { console.log("user", user) }
+
   const navigate = useNavigate();
   const [activeModal, setActiveModal] = useState<string | null>(null);
 
@@ -24,14 +26,17 @@ export default function Nav() {
   };
 
   const isAdmin = user && user.email === import.meta.env.VITE_ADMIN_EMAIL;
+  const useremail = user?.email || "";
 
   const userNavLinks: NavLinkType[] = useremail
     ? [
-        { href: "/myclasses", text: "Classes" },
-        { href: "/calendar", text: "Calendar" },
-        { href: "/user-guide", text: "User Guide" },
-      ]
-    : [];
+      { href: "/myclasses", text: "Classes" },
+      { href: "/calendar", text: "Calendar" },
+      { href: "/user-guide", text: "User Guide" },
+    ]
+    : [
+      { href: "/user-guide", text: "User Guide" },
+    ];
 
   const adminNavLinks: NavLinkType[] = [
     { href: "/admin/all-classes", text: "All Classes" },
@@ -68,7 +73,7 @@ export default function Nav() {
                   {link.text}
                 </NavLink>
               ))}
-              {!isAdmin && user && (
+              {!isAdmin && useremail && (
                 <div className="flex space-x-2">
                   <button
                     className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-lg hover:from-indigo-600 hover:to-indigo-700 transition-all duration-300 shadow-lg"
@@ -84,14 +89,17 @@ export default function Nav() {
                   </button>
                 </div>
               )}
-              {user ? <Logout /> : <LoginButton />}
+              {/* Corrected here */}
+
+              {useremail ? <Logout /> : <LoginButton />}
+
             </div>
           </div>
         </div>
       </nav>
 
       {/* Modals (Only for non-admin users) */}
-      {!isAdmin && (
+      {!isAdmin && user && (
         <>
           <Modal
             isOpen={activeModal === "join"}

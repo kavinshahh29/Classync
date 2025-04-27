@@ -1,8 +1,8 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Nav from "./components/nav/Nav";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,15 +12,14 @@ import ViewAssignment from "./pages/ViewAssignment";
 import CalendarPage from "./pages/CalendarPage";
 import UpdateAssignment from "./pages/UpdateAssignment";
 import UserGuide from "./pages/user-guide/user-guide-page";
-import Footer from "./components/Footer";
 import AdminRoute from "./utils/AdminRoute";
 import AdminClassesPage from "./pages/AdminClassesPage";
-import ClassroomDetails from "./pages/ClassroomDetail";
 import AllUsersPage from "./pages/AllUserPage";
 import ClassroomParticipants from "./pages/ClassroomParticipant";
 
 const App: React.FC = () => {
   const dispatch = useDispatch();
+  const user = useSelector((state: any) => state.user.user);
 
   const loadUser = async () => {
     try {
@@ -37,12 +36,22 @@ const App: React.FC = () => {
       }
     } catch (error) {
       console.error(error);
+      dispatch({ type: "SET_USER", payload: null });
     }
   };
 
   React.useEffect(() => {
     loadUser();
   }, []);
+
+  // If still loading
+  if (user === undefined) {
+    return (
+      <div className="flex items-center justify-center h-screen text-white text-2xl">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-900 to-gray-900 font-poppins">
@@ -60,44 +69,41 @@ const App: React.FC = () => {
       />
       <Router>
         <Nav />
-
-        {/* Content Section - Uses flex-grow to push the footer down */}
         <div className="flex-grow">
           <Routes>
+            {/* Home Page - Public */}
+            <Route path="/" element={<Home />} />
+
+            {/* Admin Routes - only admin user */}
             <Route element={<AdminRoute />}>
               <Route path="/admin/all-classes" element={<AdminClassesPage />} />
               <Route path="/admin/all-users" element={<AllUsersPage />} />
-              <Route
-                path="/classroom/:classroomId"
-                element={<ClassroomParticipants />}
-              />
-              {/* <Route
-                path="/classroom/:classroomId"
-                element={<ClassroomDetails />}
-              /> */}
+              <Route path="/classroom/:classroomId" element={<ClassroomParticipants />} />
             </Route>
-            <Route path="/" element={<Home />} />
-            <Route path="/user-guide" element={<UserGuide />} />
-            <Route path="/myclasses" element={<MyClasses />} />
-            <Route path="/classrooms/:classroomId" element={<ViewClass />} />
-            <Route
-              path="/classrooms/:classroomId/assignments/:assignmentId"
-              element={<ViewAssignment />}
-            />
-            <Route
-              path="/classrooms/:classroomId/assignments/:assignmentId/edit"
-              element={
-                <UpdateAssignment
-                  onClose={() => {}}
-                  onAssignmentUpdated={() => {}}
-                />
-              }
-            />
-            <Route path="/calendar" element={<CalendarPage />} />
+
+            {/* Protected Routes - only logged in users */}
+            {user ? (
+              <>
+                <Route path="/user-guide" element={<UserGuide />} />
+                <Route path="/myclasses" element={<MyClasses />} />
+                <Route path="/classrooms/:classroomId" element={<ViewClass />} />
+                <Route path="/classrooms/:classroomId/assignments/:assignmentId" element={<ViewAssignment />} />
+                <Route path="/classrooms/:classroomId/assignments/:assignmentId/edit" element={<UpdateAssignment onClose={() => { }} onAssignmentUpdated={() => { }} />} />
+                <Route path="/calendar" element={<CalendarPage />} />
+              </>
+            ) : (
+              // if not logged in, trying to access these -> redirect to home
+              <>
+                <Route path="/user-guide" element={<Navigate to="/" replace />} />
+                <Route path="/myclasses" element={<Navigate to="/" replace />} />
+                <Route path="/classrooms/:classroomId" element={<Navigate to="/" replace />} />
+                <Route path="/classrooms/:classroomId/assignments/:assignmentId" element={<Navigate to="/" replace />} />
+                <Route path="/classrooms/:classroomId/assignments/:assignmentId/edit" element={<Navigate to="/" replace />} />
+                <Route path="/calendar" element={<Navigate to="/" replace />} />
+              </>
+            )}
           </Routes>
         </div>
-
-        {/* <Footer /> */}
       </Router>
     </div>
   );

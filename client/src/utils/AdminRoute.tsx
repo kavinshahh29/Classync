@@ -4,7 +4,11 @@ import { useSelector } from "react-redux";
 const AdminRoute = () => {
   const user = useSelector((state: any) => state.user.user);
 
-  const isAdmin = user && user.email === import.meta.env.VITE_ADMIN_EMAIL;
+  if (user === undefined || user === null) {
+    return <div className="text-white text-center mt-10">Loading...</div>;
+  }
+
+  const isAdmin = user.email === import.meta.env.VITE_ADMIN_EMAIL;
 
   return isAdmin ? <Outlet /> : <Navigate to="/" replace />;
 };

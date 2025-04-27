@@ -37,10 +37,10 @@ interface LocationState {
 }
 
 // Email Form Component
-const EmailForm = ({ onSubmit, onCancel, isSubmitting }) => {
+const EmailForm = ({ onSubmit, onCancel, isSubmitting }: any) => {
   const [email, setEmail] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     onSubmit(email);
   };
