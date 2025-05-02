@@ -22,15 +22,15 @@ const ClassHeader: React.FC<ClassHeaderProps> = ({ classInfo, role }) => {
             >
                 <div>
                     <h1 className="text-3xl font-bold text-gray-200 mb-1">
-                        {classInfo?.className || "Class Name"}
+                        Classroom of {classInfo?.className || "Class Name"}
                     </h1>
                     <p className="text-gray-600">{classInfo?.description || ""}</p>
                 </div>
-                <div className="flex items-center space-x-2">
+                {/* <div className="flex items-center space-x-2">
                     <div className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
                         {role || "Role"}
                     </div>
-                </div>
+                </div> */}
             </motion.div>
         </motion.div>
     );

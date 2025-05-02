@@ -22,9 +22,9 @@ const JoinClassForm = ({
       // First, get the class name based on the class code
       const res = await axios.get(
         `http://localhost:8080/api/classrooms/classname/${classCode}`,
-        {
-          withCredentials: true,
-        }
+        // {
+        //   withCredentials: true,
+        // }
       );
       console.log("Class details:", res.data);
 

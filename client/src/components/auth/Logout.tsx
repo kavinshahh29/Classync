@@ -9,9 +9,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Avatar } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import ProfileCard from "./ProfileCard";
 import { useNavigate } from "react-router-dom";
+
+
+
+const getInitials = (email: string) => {
+  if (!email) return "U";
+  return email
+    .split("@")[0]
+    .split(".")
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+};
+
 
 export default function Logout() {
   const dispatch = useDispatch();
@@ -65,12 +78,16 @@ export default function Logout() {
       <DropdownMenu>
         {/* Avatar always visible */}
         <DropdownMenuTrigger asChild>
-          <Avatar className="h-10 w-10 cursor-pointer">
+          {/* <Avatar className="h-10 w-10 cursor-pointer">
             <img
               src={user.picture ? user.picture : "https://avatars.dicebear.com/api/avataaars/.svg"}
               alt="User Avatar"
               className="w-10 h-10 rounded-full"
             />
+          </Avatar> */}
+          <Avatar className="w-10 h-10 cursor-pointer">
+            <AvatarImage src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.email || 'User')}&background=random`} />
+            <AvatarFallback>{getInitials(user?.email || 'User')}</AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
 

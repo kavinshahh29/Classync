@@ -3,5 +3,6 @@ from transformers import pipeline
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
 def get_key_points(text):
-    summary = summarizer(text, max_length=100, min_length=30, do_sample=False)
+    max_len = min(150, int(len(text.split()) * 0.5))
+    summary = summarizer(text, max_length=max_len, min_length=0, do_sample=False)
     return summary[0]["summary_text"]
