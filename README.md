@@ -7,8 +7,7 @@ Classync is an AI-powered platform designed to enhance classroom collaboration, 
 ## 🚀 Features
 
 - **Classroom Management** – Organize and manage classes efficiently.
-- **Saarthi - AI Classroom Assistant** – Get AI-powered insights and assistance.
-- **Assignment Creation & Automatic Evaluation** – Generate and evaluate assignments with ease.
+- **Assignment Creation & Automatic Evaluation** – Create and evaluate assignments with ease.
 - **Doubt Management** – Facilitate student queries and discussions.
 - **Calendar Functionality**– Keep track of schedules and deadlines.
 
@@ -34,18 +33,6 @@ For more information, check out the **[User Guide](https://classync-demo.vercel.
     <td align="center" width="90">
       <img src="https://skillicons.dev/icons?i=postgres" width="45" height="45" alt="PostgreSQL" title="PostgreSQL" />
       <br>PostgreSQL
-    </td>
-    <td align="center" width="90">
-      <img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" width="45" height="45" alt="Hugging Face" title="Hugging Face" />
-      <br>Hugging Face
-    </td>
-    <td align="center" width="90">
-      <img src="https://dbdb.io/media/logos/chroma_H600YUl.svg" width="45" height="45" alt="ChromaDB" title="ChromaDB" />
-      <br>ChromaDB
-    </td>
-    <td align="center" width="90">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Scikit_learn_logo_small.svg" width="45" height="45" alt="Scikit-learn" title="Scikit-learn" />
-      <br>Scikit-learn
     </td>
   </tr>
 </table>
